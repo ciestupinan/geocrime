@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"></script>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      // should crimeData be local or global scope?
+      var markers = [];
+
+      function initMap() {
+        const sfCoords = {lat: 37.7749, lng: -122.4194};
+
+        const map = new google.maps.Map(document.getElementById('map'), {
+          center: sfCoords,
+          zoom: 12
+        });
+
+        $.ajax({
+          url: "https://data.sfgov.org/resource/nwbb-fxkq.json",
+          type: "GET",
+          data: {
+            "$limit" : 5000,
+            "$$app_token" : "Y6mTFPFpnPQzYXxLv0LVidpom"
+          }
+        }).done(function(data) {
+          let crimeData = data;
+          populateMap(crimeData, map);
+        });
+      // end initMap()
+      }
+
+      // Populate map with markers
+      // *** This may change if I need to populate depending 
+      function populateMap(data, map){
+        for (let i = 0; i < data.length; i++) {
+          createMarker(data[i], map);
+        }
+      }
+
+      // Create marker at lat long with tool tip that includes crime information
+      function createMarker(dataCol, map) {
+        incident_datetime = dataCol['incident_datetime'];
+        incident_category = dataCol['incident_category'];
+        incident_subcategory = dataCol['incident_subcategory'];
+        incident_description = dataCol['incident_description'];
+        resolution = dataCol['resolution'];
+        latitude = parseFloat(dataCol['latitude']);
+        longitude = parseFloat(dataCol['longitude']);
+
+        // Add markers to map
+        const marker = new google.maps.Marker({
+          position: {lat: latitude, lng: longitude},
+          map: map,
+          title: incident_datetime    
+        }); 
+
+        // Content for tooltip
+        const contentString = '<div id="content">'+
+          '<div id="siteNotice">'+
+          '</div>'+
+          '<p id="firstHeading" class="firstHeading"><b>'+ incident_datetime +'</b></p>'+
+          '<div id="bodyContent">'+
+          '<p> category: ' + incident_category +
+          '<br> subcategory: ' + incident_subcategory +
+          '<br> description: ' + incident_description +
+          '<br> resolution: ' + resolution + '</p>' +
+          '</div>'+
+          '</div>';
+        
+        // Add content to tooltip
+        let infowindow = new google.maps.InfoWindow({
+          content: contentString
+        });
+
+        // On click, show tooltip
+        marker.addListener('click', function() {
+          infowindow.open(map, marker);
+        });
+      }
+    </script>
+
+    <script
+    src="https://maps.googleapis.com/maps/api/js?key={{ key }}&callback=initMap" async defer>
+    </script>
+  </body>
+</html>
