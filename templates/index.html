@@ -24,12 +24,15 @@
     <script>
       function initMap() {
         const sfCoords = {lat: 37.7749, lng: -122.4194};
+        const markers = [];
 
+        // Create map
         const map = new google.maps.Map(document.getElementById('map'), {
           center: sfCoords,
           zoom: 12
         });
 
+        // Get crime data
         $.ajax({
           url: "https://data.sfgov.org/resource/nwbb-fxkq.json",
           type: "GET",
@@ -39,52 +42,64 @@
           }
         }).done(function(data) {
           let crimeData = data;
-          populateMap(crimeData, map);
+          for (let i = 0; i < crimeData.length; i++) {
+            markerData = getMarkerData(crimeData[i])
+            
+            lat = markerData['latitude']
+            lng = markerData['longitude']
+
+            marker = addMarker(lat, lng, map);
+            addInfoWindow(marker, markerData, map);
+            markers.push(marker);
+
+          }
+
         });
-      // end initMap()
       }
 
-      // Populate map with markers
-      function populateMap(data, map){
-        for (let i = 0; i < data.length; i++) {
-          createMarker(data[i], map);
-        }
+      function getMarkerData(data){
+        markerData = {};
+
+        markerData['incident_datetime'] = data['incident_datetime'];
+        markerData['incident_category'] = data['incident_category'];
+        markerData['incident_subcategory'] = data['incident_subcategory'];
+        markerData['incident_description'] = data['incident_description'];
+        markerData['resolution'] = data['resolution'];
+        markerData['latitude'] = parseFloat(data['latitude']);
+        markerData['longitude'] = parseFloat(data['longitude']);
+        
+        return markerData;
       }
 
-      // Create marker at lat long with tool tip that includes crime information
-      function createMarker(dataCol, map) {
-        incident_datetime = dataCol['incident_datetime'];
-        incident_category = dataCol['incident_category'];
-        incident_subcategory = dataCol['incident_subcategory'];
-        incident_description = dataCol['incident_description'];
-        resolution = dataCol['resolution'];
-        latitude = parseFloat(dataCol['latitude']);
-        longitude = parseFloat(dataCol['longitude']);
 
-        // Add markers to map
+      // Create marker at lat long
+      function addMarker(latitude, longitude, map) {
+        
         const marker = new google.maps.Marker({
           position: {lat: latitude, lng: longitude},
           map: map,
-          title: incident_datetime    
+          title: `${latitude}, ${longitude}`   
         }); 
 
-        
+        return marker;
+      }
 
-        // Content for tooltip
-        const contentString = '<div id="content">'+
-          '<div id="siteNotice">'+
-          '</div>'+
-          '<p id="firstHeading" class="firstHeading"><b>'+ incident_datetime +'</b></p>'+
-          '<div id="bodyContent">'+
-          '<p> category: ' + incident_category +
-          '<br> subcategory: ' + incident_subcategory +
-          '<br> description: ' + incident_description +
-          '<br> resolution: ' + resolution + '</p>' +
-          '</div>'+
-          '</div>';
+
+      // Create tooltip for marker
+      function addInfoWindow(marker, data, map){
+        const contentString = `<div id="content">
+          <div id="siteNotice"></div>
+          <p id="firstHeading" class="firstHeading"><b> ${data['incident_datetime']} </b></p>
+          <div id="bodyContent">
+          <p> category: ${data['incident_category']}
+          <br> subcategory: ${data['incident_subcategory']}
+          <br> description: ${data['incident_description']}
+          <br> resolution: ${data['resolution']} </p>
+          </div>
+          </div>`;
         
         // Add content to tooltip
-        let infowindow = new google.maps.InfoWindow({
+        const infowindow = new google.maps.InfoWindow({
           content: contentString
         });
 
@@ -93,6 +108,8 @@
           infowindow.open(map, marker);
         });
       }
+        
+
     </script>
 
     <script
