@@ -22,9 +22,6 @@
   <body>
     <div id="map"></div>
     <script>
-      // should crimeData be local or global scope?
-      var markers = [];
-
       function initMap() {
         const sfCoords = {lat: 37.7749, lng: -122.4194};
 
@@ -48,7 +45,6 @@
       }
 
       // Populate map with markers
-      // *** This may change if I need to populate depending 
       function populateMap(data, map){
         for (let i = 0; i < data.length; i++) {
           createMarker(data[i], map);
@@ -71,6 +67,8 @@
           map: map,
           title: incident_datetime    
         }); 
+
+        
 
         // Content for tooltip
         const contentString = '<div id="content">'+
