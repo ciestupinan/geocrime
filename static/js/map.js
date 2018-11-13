@@ -25,7 +25,6 @@ function initMap() {
   }).done(function(data) {
 
     const crimeData = extractRelevantData(data);
-    
 
     for (let i = 0; i < crimeData.length; i++) {
       let incident = crimeData[i];
@@ -35,7 +34,6 @@ function initMap() {
 
       // Don't use data that doesn't have lat,lng
       if (!isNaN(lat) && !isNaN(lng)){
-
         
         // Add incident lat,lng to Object with value of incident data
         // If incident lat,lng in Object, append incident data to value list
@@ -48,7 +46,7 @@ function initMap() {
       }
     }
 
-    createTooltip(incidentsAtSamePoint, markers, map);
+    createMarker(incidentsAtSamePoint, markers, map);
   });
 }
 
@@ -74,12 +72,10 @@ function extractRelevantData(data){
 }
 
 
-// Create marker at lat long
-function addMarker(latitude, longitude, map) {
+function addMarker(latitude, longitude) {
   
   const marker = new google.maps.Marker({
     position: {lat: latitude, lng: longitude},
-    map: map,
     title: `${latitude}, ${longitude}`   
   }); 
 
@@ -88,10 +84,8 @@ function addMarker(latitude, longitude, map) {
 
 
 
-// Create tooltip for markers at the same lat, lng. Include all data in one tooltip
-function createTooltip(incidentsAtSamePoint, markers, map){
-
-  // {'lat,lng': [relevantData]}
+// Create markers
+function createMarker(incidentsAtSamePoint, markers, map){
 
   let entries = Object.entries(incidentsAtSamePoint);
      
@@ -99,7 +93,9 @@ function createTooltip(incidentsAtSamePoint, markers, map){
     let point = location.split(",");
     let lat = parseFloat(point[0]);
     let lng = parseFloat(point[1]);
-    const marker = addMarker(lat, lng, map);
+
+    const marker = addMarker(lat, lng);
+    marker.setMap(map);
     markers.push(marker);
     
     makeInfoWindow(lat, lng, incidents, marker);
@@ -134,10 +130,6 @@ function makeInfoWindow(latitude, longitude, data, marker){
     infowindow.open(map, marker);
   });
 }
-
-
-
-
 
 
 
