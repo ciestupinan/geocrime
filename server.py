@@ -17,7 +17,7 @@ app.jinja_env.undefined = StrictUndefined
 @app.route('/')
 def index():
     
-    return render_template('index.html', key=GMAPS_KEY)
+    return render_template('index.html', key=GMAPS_KEY, token=PDTOKEN)
 
 
 if __name__ == "__main__":

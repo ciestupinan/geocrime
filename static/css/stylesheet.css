@@ -1,0 +1,13 @@
+#map {
+	margin-top: 20px;
+	margin-bottom:20px;
+	height:80%;
+	width: 100%;
+}
+html, body {
+
+	height: 100%;
+	margin-top: 10px;
+	padding: 0;
+
+}
