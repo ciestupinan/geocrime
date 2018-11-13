@@ -20,6 +20,7 @@ function initMap() {
     type: "GET",
     data: {
       "$limit" : 5000,
+      // If this is an API key we don't want this in a repo ...
       "$$app_token" : "Y6mTFPFpnPQzYXxLv0LVidpom"
     }
   }).done(function(data) {
