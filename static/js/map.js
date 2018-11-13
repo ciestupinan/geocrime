@@ -5,7 +5,8 @@ function initMap() {
   const sfCoords = {lat: 37.7749, lng: -122.4194};
   
   // array of Marker objects
-  const markers = [];
+  let incidentsAtSamePoint = {};
+  let markers = [];
 
   // Create map
   const map = new google.maps.Map(document.getElementById('map'), {
@@ -25,16 +26,29 @@ function initMap() {
 
     const crimeData = extractRelevantData(data);
     
+
     for (let i = 0; i < crimeData.length; i++) {
-      const col = crimeData[i];
+      let incident = crimeData[i];
 
-      const lat = col['latitude']
-      const lng = col['longitude']
+      let lat = incident['latitude']
+      let lng = incident['longitude']
 
-      const marker = addMarker(lat, lng, map);
-      addInfoWindow(marker, col, map);
-      markers.push(marker);
+      // Don't use data that doesn't have lat,lng
+      if (!isNaN(lat) && !isNaN(lng)){
+
+        
+        // Add incident lat,lng to Object with value of incident data
+        // If incident lat,lng in Object, append incident data to value list
+        if (`${lat}, ${lng}` in incidentsAtSamePoint){ 
+          incidentsAtSamePoint[`${lat}, ${lng}`].push(incident);
+        }
+        else {
+          incidentsAtSamePoint[`${lat}, ${lng}`] = [incident];
+        }
+      }
     }
+
+    createTooltip(incidentsAtSamePoint, markers, map);
   });
 }
 
@@ -44,7 +58,7 @@ function extractRelevantData(data){
   const relevantData = [];
 
   for (let i = 0; i < data.length; i++) {
-    const col = data[i];
+    let col = data[i];
 
     relevantData.push({
       'incident_datetime': col['incident_datetime'],
@@ -73,26 +87,65 @@ function addMarker(latitude, longitude, map) {
 }
 
 
-// Create tooltip for marker
-function addInfoWindow(marker, data, map){
-  const contentString = `<div id="content">
-    <div id="siteNotice"></div>
-    <p id="firstHeading" class="firstHeading"><b> ${data['incident_datetime']} </b></p>
-    <div id="bodyContent">
-    <p> category: ${data['incident_category']}
-    <br> subcategory: ${data['incident_subcategory']}
-    <br> description: ${data['incident_description']}
-    <br> resolution: ${data['resolution']} </p>
-    </div>
-    </div>`;
+
+// Create tooltip for markers at the same lat, lng. Include all data in one tooltip
+function createTooltip(incidentsAtSamePoint, markers, map){
+
+  // {'lat,lng': [relevantData]}
+
+  let entries = Object.entries(incidentsAtSamePoint);
+     
+  for (let [location,incidents] of entries){
+    let point = location.split(",");
+    let lat = parseFloat(point[0]);
+    let lng = parseFloat(point[1]);
+    const marker = addMarker(lat, lng, map);
+    markers.push(marker);
+    
+    makeInfoWindow(lat, lng, incidents, marker);
+  }
+
+}
+
+// Make info window with all of the data at that lat, lng
+function makeInfoWindow(latitude, longitude, data, marker){
   
-  // Add content to tooltip
+  let contentString = `<div id="content">
+    <div id="siteNotice"></div>
+    <p id="firstHeading" class="firstHeading">
+    <b>Crimes at (${latitude},${longitude})</b></p>
+    <div id="bodyContent">`;
+    
+  for (let i = 0; i < data.length; i++){
+    let incident = data[i];
+    contentString = contentString + `<p>datetime: ${incident['incident_datetime']}
+      <br>category: ${incident['incident_category']}
+      <br>subcategory: ${incident['incident_subcategory']}
+      <br>description: ${incident['incident_description']}
+      <br>resolution: ${incident['resolution']}</p><hr>`;
+  }
+  contentString = contentString + '</div></div>';
+
   const infowindow = new google.maps.InfoWindow({
     content: contentString
   });
 
-  // On click, show tooltip
   marker.addListener('click', function() {
     infowindow.open(map, marker);
   });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
