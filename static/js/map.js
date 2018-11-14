@@ -2,8 +2,9 @@
 
 // GLOBAL VARIABLES
 let MARKERS = [];
+const INCIDENTS = {};
 let MAP;
-let INCIDENTS = {};
+
 
 // Initialize map
 function initMap() {
@@ -51,7 +52,8 @@ function initMap() {
 
     }
 
-    createMarkers(INCIDENTS);
+    MARKERS = createMarkers(INCIDENTS);
+    setMarkers(MARKERS);
 
   });
 
@@ -59,18 +61,19 @@ function initMap() {
 
 
 // Return relevant data at given marker (passed in through data)
-function extractRelevantData(data){
+// This should only be done once, to create INCIDENTS in initMap()
+function extractRelevantData(crimeData){
 
   const relevantData = [];
 
-  for (let i = 0; i < data.length; i++) {
-    let col = data[i];
+  for (let i = 0; i < crimeData.length; i++) {
+    let col = crimeData[i];
 
     relevantData.push({
-      'incident_datetime': col['incident_datetime'],
-      'incident_category': col['incident_category'],
-      'incident_subcategory': col['incident_subcategory'],
-      'incident_description': col['incident_description'],
+      'datetime': col['incident_datetime'],
+      'category': col['incident_category'],
+      'subcategory': col['incident_subcategory'],
+      'description': col['incident_description'],
       'resolution': col['resolution'],
       'latitude': parseFloat(col['latitude']),
       'longitude': parseFloat(col['longitude'])
@@ -84,21 +87,22 @@ function extractRelevantData(data){
 
 
 // Creates list of marker objects
-function createMarkers(incidentsAtSamePoint){
+function createMarkers(listOfIncidents){
 
-  let entries = Object.entries(incidentsAtSamePoint);
+  const listOfMarkers = [];
+  const entries = Object.entries(listOfIncidents);
      
   for (let [location,incidents] of entries){
-    let point = location.split(",");
+    let point = location.split(',');
     let lat = parseFloat(point[0]);
     let lng = parseFloat(point[1]);
 
     const marker = createMarkerObject(lat, lng);
-    MARKERS.push(marker);
-    marker.setMap(MAP);
+    listOfMarkers.push(marker);
     makeInfoWindow(lat, lng, incidents, marker);
   }
 
+  return listOfMarkers;
 }
 
 
@@ -116,8 +120,8 @@ function createMarkerObject(latitude, longitude) {
 }
 
 
-// Make info window with all of the data at that lat, lng
-function makeInfoWindow(latitude, longitude, data, marker){
+// Make info window with all of the data for the marker at lat,lng
+function makeInfoWindow(latitude, longitude, listOfIncidentsAtLocation, marker){
   
   let contentString = `<div id="content">
     <div id="siteNotice"></div>
@@ -125,12 +129,12 @@ function makeInfoWindow(latitude, longitude, data, marker){
     <b>Crimes at (${latitude},${longitude})</b></p>
     <div id="bodyContent">`;
     
-  for (let i = 0; i < data.length; i++){
-    let incident = data[i];
-    contentString = contentString + `<p>datetime: ${incident['incident_datetime']}</p>
-      <p id="category">category: ${incident['incident_category']}</p>
-      <p id="subcategory">subcategory: ${incident['incident_subcategory']}</p>
-      <p>description: ${incident['incident_description']}</p>
+  for (let i = 0; i < listOfIncidentsAtLocation.length; i++){
+    let incident = listOfIncidentsAtLocation[i];
+    contentString = contentString + `<p>datetime: ${incident['datetime']}</p>
+      <p id="category">category: ${incident['category']}</p>
+      <p id="subcategory">subcategory: ${incident['subcategory']}</p>
+      <p>description: ${incident['description']}</p>
       <p id="resolution">resolution: ${incident['resolution']}</p><hr>`;
   }
 
@@ -147,131 +151,145 @@ function makeInfoWindow(latitude, longitude, data, marker){
 
 
 // Each time form is changed, filter Markers to set on map
-document.querySelector('form').addEventListener("submit", function(evt) {
+document.getElementById('form').addEventListener('submit', function(evt) {
 
-  const filterCategory = document.getElementById("category").value;
-  const filterSubcategory = document.getElementById("subcategory").value;
-  const filterResolution = document.getElementById("resolution").value;
+  const filterCategory = document.getElementById('category').value;
+  const filterSubcategory = document.getElementById('subcategory').value;
+  const filterResolution = document.getElementById('resolution').value;
 
   const filters = [filterCategory, filterSubcategory, filterResolution];
   const noFilter = '---';
 
-  // If no filters are set, we just return all the markers
+  // If no filters are set, return all the markers
   if ((filterCategory == noFilter) && (filterSubcategory == noFilter) && (filterResolution == noFilter)) {
       setMarkers(MARKERS);
       return;
   }
 
-  // If filters are set, create a list of Markers to display that fit filter criteria
-  const markersToDisplay = compareFilterToMarkerValue(filters, noFilter);
+  // Otherwise filters are set, create a list of Markers to display that fit filter criteria
+  const listOfIncidents = compareFilterToMarkerValue(filters, noFilter);
+  const markersToDisplay = createMarkers(listOfIncidents);
 
-  // Tell user if there are no markers that meet their filter search criteria
-  if (markersToDisplay.length == 0){
-    alert("There are no markers to display for your search.")
+  // Tell user if there are no markers that meet their filter search criteria, return nothing
+  if (markersToDisplay.length == 0) {
+    alert('There are no markers to display for your search.');
+    return;
   }
 
+  // Display markers on map
   setMarkers(markersToDisplay);
 
 });
 
-/*
+
 // Helper to form submit change
 // Given a list of filter values, select Markers that meet that criteria
 function compareFilterToMarkerValue(filters, noFilter) {
 
   const [filterCategory, filterSubcategory, filterResolution] = filters;
-  let markersToDisplay = [];
+  
+  // List of incidents that meet filter criteria
+  const incidentsToDisplay = [];
 
-  for (let i = 0; i < MARKERS.length; i++) {
-    let marker = MARKERS[i];
-    let infowindow = marker['infowindow'];
-    let markerCategory = infowindow['content'].getElementById('category');
-    let markerSubcategory = infowindow['content'].getElementById('subcategory');
-    let markerResolution = infowindow['content'].getElementById('resolution');
+  const entries = Object.entries(INCIDENTS);
 
-    // Check for when all filters are selected
+  // go through INCIDENTS to see if any meet filter criteria. If yes, add to incidentsToDisplay
+  for (let [location,listOfIncidentsAtLocation] of entries){
 
-    // Only category has filter
-    if ( (filterCategory == markerCategory)
-      && (filterSubcategory == noFilter)
-      && (filterResolution == noFilter) ) {
-        
-        markersToDisplay.append(marker);
-        continue;
-    }
+    let point = location.split(',');
+    let lat = parseFloat(point[0]);
+    let lng = parseFloat(point[1]);
 
-    // Only subcategory has filter 
-    else if ( (filterCategory == noFilter)
-      && (filterSubcategory == markerSubcategory)
-      && (filterResolution == noFilter) ) {
+    for (let i = 0; i < listOfIncidentsAtLocation.length; i++) {
+      
+      let incident = listOfIncidentsAtLocation[i];
 
-        markersToDisplay.append(marker);
-        continue;
-    }
+      let incidentDatetime = incident['datetime'];
+      let incidentCategory = incident['category'];
+      let incidentSubcategory = incident['subcategory'];
+      let incidentResolution = incident['resolution'];
 
-    // Only resolution has filter 
-    else if ( (filterCategory == noFilter)
-      && (filterSubcategory == noFilter) 
-      && (filterResolution == markerResolution) ) {
+      // Only category has filter
+      if ( (filterCategory == incidentCategory)
+        && (filterSubcategory == noFilter)
+        && (filterResolution == noFilter) ) {
+          
+          incidentsToDisplay.append(incident);
+          continue;
+      }
 
-        markersToDisplay.append(marker);
-        continue;
-    }
+      // Only subcategory has filter 
+      else if ( (filterCategory == noFilter)
+        && (filterSubcategory == incidentSubcategory)
+        && (filterResolution == noFilter) ) {
 
-    // Category and subcategory have filter
-    else if ( (filterCategory == markerCategory)
-      && (filterSubcategory == markerSubcategory) 
-      && (filterResolution == noFilter) ){
+          incidentsToDisplay.append(incident);
+          continue;
+      }
 
-        markersToDisplay.append(marker);
-        continue;
-    }
+      // Only resolution has filter 
+      else if ( (filterCategory == noFilter)
+        && (filterSubcategory == noFilter) 
+        && (filterResolution == incidentResolution) ) {
 
-    // Category and resolution have filter
-    else if ( (filterCategory == markerCategory)
-      && (filterSubcategory == noFilter) 
-      && (filterResolution == markerResolution) ) {
+          incidentsToDisplay.append(incident);
+          continue;
+      }
 
-        markersToDisplay.append(marker);
-        continue;
-    }
+      // Category and subcategory have filter
+      else if ( (filterCategory == incidentCategory)
+        && (filterSubcategory == incidentSubcategory) 
+        && (filterResolution == noFilter) ){
 
-    // Subcategory and resolution have filter
-    else if ( (filterCategory == noFilter) 
-      && (filterSubcategory == markerSubcategory)
-      && (filterResolution == markerResolution) ){
+          incidentsToDisplay.append(incident);
+          continue;
+      }
 
-        markersToDisplay.append(marker);
-        continue;
-    }
+      // Category and resolution have filter
+      else if ( (filterCategory == incidentCategory)
+        && (filterSubcategory == noFilter) 
+        && (filterResolution == incidentResolution) ) {
 
-    // Category, subcategory, and resolution have filter
-    else if ((filterCategory == markerCategory) 
-      && (filterSubcategory == markerSubcategory) 
-      && (filterResolution == markerResolution)) {
+          incidentsToDisplay.append(incident);
+          continue;
+      }
 
-        markersToDisplay.append(marker);
-        continue;
+      // Subcategory and resolution have filter
+      else if ( (filterCategory == noFilter) 
+        && (filterSubcategory == incidentSubcategory)
+        && (filterResolution == incidentResolution) ){
+
+          incidentsToDisplay.append(incident);
+          continue;
+      }
+
+      // Category, subcategory, and resolution have filter
+      else if ((filterCategory == incidentCategory) 
+        && (filterSubcategory == incidentSubcategory) 
+        && (filterResolution == incidentResolution)) {
+
+          incidentsToDisplay.append(incident);
+          continue;
+      }
+
     }
 
   }
 
-  return markersToDisplay;
+  return incidentsToDisplay;
 }
+
 
 // Helper to form submit change
 // Display list of Markers on map
 function setMarkers(markersToDisplay){
 
   for (let i = 0; i < markersToDisplay.length; i++) {
+    let marker = markersToDisplay[i];
     marker.setMap(MAP);
   }
 
 }
-
-
-
-*/
 
 
 
