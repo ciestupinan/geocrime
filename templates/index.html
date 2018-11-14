@@ -8,21 +8,11 @@
     <link rel="stylesheet" href="static/css/stylesheet.css">
   </head>
   <body>
-    <form name="filters">
-      Resolution: 
-      <select name="resolution" id="resolution">
-        <option value="none">---</option>
-        <option value="Cite or Arrest Adult">Cite or Arrest Adult</option>
-        <option value="Cite or Arrest Juvenile">Cite or Arrest Juvenile</option>
-        <option value="Exceptional Adult">Exceptional Adult</option>
-        <option value="Open or Active">Open or Active</option>
-        <option value="Unfounded">Unfounded</option>
-      </select>
-
+    <form name="filters" onsubmit="setMarkers()">
 
       Category:
       <select name="category" id="category">
-        <option value="none">---</option>
+        <option value="---">---</option>
         <option value="Arson">Arson</option>
         <option value="Burglary">Burglary</option>
         <option value="Case Closure">Case Closure</option>
@@ -63,7 +53,7 @@
 
       Subcategory:
       <select name="subcategory" id="subcategory">
-        <option value="none">---</option>
+        <option value="---">---</option>
         <option value="Aggravated Assault">Aggravated Assault</option>
         <option value="Arson">Arson</option>
         <option value="Burglary - Commercial">Burglary - Commercial</option>
@@ -124,6 +114,16 @@
         <option value="Vandalism">Vandalism</option>
         <option value="Warrant">Warrant</option>
         <option value="Weapons Offense">Weapons Offense</option>
+      </select>
+
+      Resolution: 
+      <select name="resolution" id="resolution">
+        <option value="---">---</option>
+        <option value="Cite or Arrest Adult">Cite or Arrest Adult</option>
+        <option value="Cite or Arrest Juvenile">Cite or Arrest Juvenile</option>
+        <option value="Exceptional Adult">Exceptional Adult</option>
+        <option value="Open or Active">Open or Active</option>
+        <option value="Unfounded">Unfounded</option>
       </select>
 
       <input type="submit">

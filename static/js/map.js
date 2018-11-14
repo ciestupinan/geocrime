@@ -1,27 +1,32 @@
 "use strict"
 
+// GLOBAL VARIABLES
+let MARKERS = [];
+const MAP;
+
 // Initialize map
 function initMap() {
   const sfCoords = {lat: 37.7749, lng: -122.4194};
   
   // array of Marker objects
   let incidentsAtSamePoint = {};
-  let markers = [];
 
   // Create map
-  const map = new google.maps.Map(document.getElementById('map'), {
+  MAP = new google.maps.Map(document.getElementById('map'), {
     center: sfCoords,
     zoom: 12
   });
 
   // Get crime data from API
   $.ajax({
+
     url: "https://data.sfgov.org/resource/nwbb-fxkq.json",
     type: "GET",
     data: {
       "$limit" : 5000,
       "$$app_token" : "Y6mTFPFpnPQzYXxLv0LVidpom"
     }
+
   }).done(function(data) {
 
     const crimeData = extractRelevantData(data);
@@ -43,12 +48,17 @@ function initMap() {
         else {
           incidentsAtSamePoint[`${lat}, ${lng}`] = [incident];
         }
+
       }
+
     }
 
-    createMarker(incidentsAtSamePoint, markers, map);
+    createMarkers(incidentsAtSamePoint);
+
   });
+
 }
+
 
 // Return relevant data at given marker (passed in through data)
 function extractRelevantData(data){
@@ -67,25 +77,16 @@ function extractRelevantData(data){
       'latitude': parseFloat(col['latitude']),
       'longitude': parseFloat(col['longitude'])
     });
+
   }
+
   return relevantData;
+
 }
 
 
-function addMarker(latitude, longitude) {
-  
-  const marker = new google.maps.Marker({
-    position: {lat: latitude, lng: longitude},
-    title: `${latitude}, ${longitude}`   
-  }); 
-
-  return marker;
-}
-
-
-
-// Create markers
-function createMarker(incidentsAtSamePoint, markers, map){
+// Creates list of marker objects
+function createMarkers(incidentsAtSamePoint){
 
   let entries = Object.entries(incidentsAtSamePoint);
      
@@ -94,14 +95,28 @@ function createMarker(incidentsAtSamePoint, markers, map){
     let lat = parseFloat(point[0]);
     let lng = parseFloat(point[1]);
 
-    const marker = addMarker(lat, lng);
-    marker.setMap(map);
-    markers.push(marker);
-    
-    makeInfoWindow(lat, lng, incidents, marker);
+    const marker = createMarkerObject(lat, lng);
+    MARKERS.push(marker);
+    marker.setMap(MAP);
+    makeInfoWindow(lat, lng, incidents);
   }
 
 }
+
+
+// Helper to createMarkers()
+// Creates each marker object
+function createMarkerObject(latitude, longitude) {
+  
+  const marker = new google.maps.Marker({
+    position: {lat: latitude, lng: longitude},
+    title: `${latitude}, ${longitude}`   
+  }); 
+
+  return marker;
+
+}
+
 
 // Make info window with all of the data at that lat, lng
 function makeInfoWindow(latitude, longitude, data, marker){
@@ -114,25 +129,91 @@ function makeInfoWindow(latitude, longitude, data, marker){
     
   for (let i = 0; i < data.length; i++){
     let incident = data[i];
-    contentString = contentString + `<p>datetime: ${incident['incident_datetime']}
-      <br>category: ${incident['incident_category']}
-      <br>subcategory: ${incident['incident_subcategory']}
-      <br>description: ${incident['incident_description']}
-      <br>resolution: ${incident['resolution']}</p><hr>`;
+    contentString = contentString + `<p>datetime: ${incident['incident_datetime']}</p>
+      <p id="category">category: ${incident['incident_category']}</p>
+      <p id="subcategory">subcategory: ${incident['incident_subcategory']}</p>
+      <p>description: ${incident['incident_description']}</p>
+      <p id="resolution">resolution: ${incident['resolution']}</p><hr>`;
   }
+
   contentString = contentString + '</div></div>';
 
   const infowindow = new google.maps.InfoWindow({
     content: contentString
   });
-
+  marker['infowindow'] = infowindow;
   marker.addListener('click', function() {
-    infowindow.open(map, marker);
+    infowindow.open(MAP, marker);
   });
+
+}
+
+
+// Sets list of Markers on map
+def setMarkers(markersToDisplay){
+
+  for (let i = 0; i < markersToDisplay.length; i++) {
+    marker.setMap(MAP);
+  }
+
 }
 
 
 
+// Each time form is changed, filter Markers to set on map
+document.getElementById('form').addEventListener("submit", function(evt) {
+
+  const filterCategory = document.getElementById("category").value;
+  const filterSubcategory = document.getElementById("subcategory").value;
+  const filterResolution = document.getElementById("resolution").value;
+
+  const filters = [filterCategory, filterSubcategory, filterResolution];
+  const noFilter = '---';
+
+  // If no filters are set, we just return all the markers
+  if ((filterCategory == noFilter) && (filterSubcategory == noFilter) && (filterResolution == noFilter)) {
+      setMarkers(MARKERS);
+      return;
+  }
+
+  // If filters are set, create a list of Markers to display that fit filter criteria
+  const markersToDisplay = compareFilterToMarkerValue(filters, noFilter);
+
+  // Tell user if there are no markers that meet their filter search criteria
+  if (markersToDisplay.length == 0){
+    alert("There are no markers to display for your search.")
+  }
+
+
+});
+  
+
+function compareFilterToMarkerValue(filters, ){
+
+  for (let i = 0; i < MARKERS.length; i++) {
+    let marker = MARKERS[i];
+    let infowindow = marker['infowindow'];
+    let markerCategory = infowindow['content'].getElementById('category');
+    let markerSubcategory = infowindow['content'].getElementById('subcategory');
+    let markerResolution = infowindow['content'].getElementById('resolution');
+
+    // Check for when all filters are selected
+    if ((filterCategory == markerCategory) 
+      && (filterSubcategory == markerSubcategory) 
+      && (filterResolution == markerResolution)) {
+
+      markersToDisplay.append(marker);
+    }
+    /* see how many of the filters are equal to no category...
+        If all 3 == no category, display all markers
+        If only 1 filter != no category, display markers with that criteria
+        If 2 filters != no category, display markers with that criteria
+        If 3 filters != no category, display markers with that criteria
+        If no markers with that criteria, display error to user
+    */
+  }
+
+}
 
 
 
