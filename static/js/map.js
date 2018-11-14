@@ -2,7 +2,7 @@
 
 // GLOBAL VARIABLES
 let MARKERS = [];
-const MAP;
+let MAP;
 
 // Initialize map
 function initMap() {
@@ -149,17 +149,6 @@ function makeInfoWindow(latitude, longitude, data, marker){
 }
 
 
-// Sets list of Markers on map
-def setMarkers(markersToDisplay){
-
-  for (let i = 0; i < markersToDisplay.length; i++) {
-    marker.setMap(MAP);
-  }
-
-}
-
-
-
 // Each time form is changed, filter Markers to set on map
 document.getElementById('form').addEventListener("submit", function(evt) {
 
@@ -184,11 +173,17 @@ document.getElementById('form').addEventListener("submit", function(evt) {
     alert("There are no markers to display for your search.")
   }
 
+  setMarkers(markersToDisplay);
 
 });
-  
 
-function compareFilterToMarkerValue(filters, ){
+
+// Helper to form submit change
+// Given a list of filter values, select Markers that meet that criteria
+function compareFilterToMarkerValue(filters, noFilter) {
+
+  const [filterCategory, filterSubcategory, filterResolution] = filters;
+  let markersToDisplay = [];
 
   for (let i = 0; i < MARKERS.length; i++) {
     let marker = MARKERS[i];
@@ -198,24 +193,84 @@ function compareFilterToMarkerValue(filters, ){
     let markerResolution = infowindow['content'].getElementById('resolution');
 
     // Check for when all filters are selected
-    if ((filterCategory == markerCategory) 
+
+    // Only category has filter
+    if ( (filterCategory == markerCategory)
+      && (filterSubcategory == noFilter)
+      && (filterResolution == noFilter) ) {
+        
+        markersToDisplay.append(marker);
+        continue;
+    }
+
+    // Only subcategory has filter 
+    else if ( (filterCategory == noFilter)
+      && (filterSubcategory == markerSubcategory)
+      && (filterResolution == noFilter) ) {
+
+        markersToDisplay.append(marker);
+        continue;
+    }
+
+    // Only resolution has filter 
+    else if ( (filterCategory == noFilter)
+      && (filterSubcategory == noFilter) 
+      && (filterResolution == markerResolution) ) {
+
+        markersToDisplay.append(marker);
+        continue;
+    }
+
+    // Category and subcategory have filter
+    else if ( (filterCategory == markerCategory)
+      && (filterSubcategory == markerSubcategory) 
+      && (filterResolution == noFilter) ){
+
+        markersToDisplay.append(marker);
+        continue;
+    }
+
+    // Category and resolution have filter
+    else if ( (filterCategory == markerCategory)
+      && (filterSubcategory == noFilter) 
+      && (filterResolution == markerResolution) ) {
+
+        markersToDisplay.append(marker);
+        continue;
+    }
+
+    // Subcategory and resolution have filter
+    else if ( (filterCategory == noFilter) 
+      && (filterSubcategory == markerSubcategory)
+      && (filterResolution == markerResolution) ){
+
+        markersToDisplay.append(marker);
+        continue;
+    }
+
+    // Category, subcategory, and resolution have filter
+    else if ((filterCategory == markerCategory) 
       && (filterSubcategory == markerSubcategory) 
       && (filterResolution == markerResolution)) {
 
-      markersToDisplay.append(marker);
+        markersToDisplay.append(marker);
+        continue;
     }
-    /* see how many of the filters are equal to no category...
-        If all 3 == no category, display all markers
-        If only 1 filter != no category, display markers with that criteria
-        If 2 filters != no category, display markers with that criteria
-        If 3 filters != no category, display markers with that criteria
-        If no markers with that criteria, display error to user
-    */
+
+  }
+
+  return markersToDisplay;
+}
+
+// Helper to form submit change
+// Display list of Markers on map
+function setMarkers(markersToDisplay){
+
+  for (let i = 0; i < markersToDisplay.length; i++) {
+    marker.setMap(MAP);
   }
 
 }
-
-
 
 
 
