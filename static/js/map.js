@@ -3,13 +3,11 @@
 // GLOBAL VARIABLES
 let MARKERS = [];
 let MAP;
+let INCIDENTS = {};
 
 // Initialize map
 function initMap() {
-  const sfCoords = {lat: 37.7749, lng: -122.4194};
-  
-  // array of Marker objects
-  let incidentsAtSamePoint = {};
+  const sfCoords = {lat: 37.7749, lng: -122.4194};  
 
   // Create map
   MAP = new google.maps.Map(document.getElementById('map'), {
@@ -42,18 +40,18 @@ function initMap() {
         
         // Add incident lat,lng to Object with value of incident data
         // If incident lat,lng in Object, append incident data to value list
-        if (`${lat}, ${lng}` in incidentsAtSamePoint){ 
-          incidentsAtSamePoint[`${lat}, ${lng}`].push(incident);
+        if (`${lat}, ${lng}` in INCIDENTS){ 
+          INCIDENTS[`${lat}, ${lng}`].push(incident);
         }
         else {
-          incidentsAtSamePoint[`${lat}, ${lng}`] = [incident];
+          INCIDENTS[`${lat}, ${lng}`] = [incident];
         }
 
       }
 
     }
 
-    createMarkers(incidentsAtSamePoint);
+    createMarkers(INCIDENTS);
 
   });
 
@@ -98,7 +96,7 @@ function createMarkers(incidentsAtSamePoint){
     const marker = createMarkerObject(lat, lng);
     MARKERS.push(marker);
     marker.setMap(MAP);
-    makeInfoWindow(lat, lng, incidents);
+    makeInfoWindow(lat, lng, incidents, marker);
   }
 
 }
@@ -141,7 +139,6 @@ function makeInfoWindow(latitude, longitude, data, marker){
   const infowindow = new google.maps.InfoWindow({
     content: contentString
   });
-  marker['infowindow'] = infowindow;
   marker.addListener('click', function() {
     infowindow.open(MAP, marker);
   });
@@ -150,7 +147,7 @@ function makeInfoWindow(latitude, longitude, data, marker){
 
 
 // Each time form is changed, filter Markers to set on map
-document.getElementById('form').addEventListener("submit", function(evt) {
+document.querySelector('form').addEventListener("submit", function(evt) {
 
   const filterCategory = document.getElementById("category").value;
   const filterSubcategory = document.getElementById("subcategory").value;
@@ -177,7 +174,7 @@ document.getElementById('form').addEventListener("submit", function(evt) {
 
 });
 
-
+/*
 // Helper to form submit change
 // Given a list of filter values, select Markers that meet that criteria
 function compareFilterToMarkerValue(filters, noFilter) {
@@ -274,7 +271,7 @@ function setMarkers(markersToDisplay){
 
 
 
-
+*/
 
 
 
