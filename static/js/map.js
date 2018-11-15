@@ -53,7 +53,7 @@ function initMap() {
     }
 
     MARKERS = createMarkers(INCIDENTS);
-    setMarkers(MARKERS);
+    setMarkers(MAP);
 
   });
 
@@ -112,8 +112,10 @@ function createMarkerObject(latitude, longitude) {
   
   const marker = new google.maps.Marker({
     position: {lat: latitude, lng: longitude},
-    title: `${latitude}, ${longitude}`   
+    title: `${latitude}, ${longitude}`,
+    map: MAP
   }); 
+  //console.log(marker);
 
   return marker;
 
@@ -153,122 +155,78 @@ function makeInfoWindow(latitude, longitude, listOfIncidentsAtLocation, marker){
 // Each time form is changed, filter Markers to set on map
 document.getElementById('form').addEventListener('submit', function(evt) {
   evt.preventDefault();
-    console.log("pstt");
-  const filterCategory = document.getElementById('category').value;
-  const filterSubcategory = document.getElementById('subcategory').value;
-  const filterResolution = document.getElementById('resolution').value;
+  
+  // clear the markers currently on the map
+  deleteMarkers();
 
-  const filters = [filterCategory, filterSubcategory, filterResolution];
-  const noFilter = '---';
+  const elements = document.getElementById('form').elements;
+  //console.log(elements);
+  // console.log(typeof(elements));
+  const noFilterSet = '---';
+
+  // contains form_ids of form elements with filter submission
+  const filterSet = {};
+  for (let i=0;i<elements.length-1;i++){
+    if (elements[i].value != noFilterSet) {
+      filterSet[elements[i].id] = elements[i].value;
+    }
+  }
+
+  // console.log(filterSet);
 
   // If no filters are set, return all the markers
-  if ((filterCategory == noFilter) && (filterSubcategory == noFilter) && (filterResolution == noFilter)) {
-    console.log("hello");
-      setMarkers(MARKERS);
+  if (Object.keys(filterSet).length === 0) {
+      setMarkers(MAP);
       return;
   }
+  
   else {
-    // Otherwise filters are set, create a list of Markers to display that fit filter criteria
-    const listOfIncidents = compareFilterToMarkerValue(filters, noFilter);
-    const markersToDisplay = createMarkers(listOfIncidents);
 
+
+    // Otherwise filters are set, create a list of Markers to display that fit filter criteria
+    const listOfIncidents = compareFilterToDataValue(filterSet);
+    const markersToDisplay = createMarkers(listOfIncidents);
+    //MARKERS = createMarkers(listOfIncidents);
     // Tell user if there are no markers that meet their filter search criteria, return nothing
     if (markersToDisplay.length === 0) {
+    // if (MARKERS.length == 0){
       alert('There are no markers to display for your search.');
       return;
     }
 
     // Display markers on map
-    setMarkers(markersToDisplay);
+    setMarkers(MAP);
   }
 });
 
 
 // Helper to form submit change
 // Given a list of filter values, select Markers that meet that criteria
-function compareFilterToMarkerValue(filters, noFilter) {
+function compareFilterToDataValue(elementsWithFilters) {
 
-  const [filterCategory, filterSubcategory, filterResolution] = filters;
-  
+  //{'id': 'value', 'id': value}
+
   // List of incidents that meet filter criteria
   const incidentsToDisplay = [];
 
-  const entries = Object.entries(INCIDENTS);
 
   // go through INCIDENTS to see if any meet filter criteria. If yes, add to incidentsToDisplay
-  for (let [location,listOfIncidentsAtLocation] of entries){
+  for (let [location,listOfIncidentsAtLocation] of (Object.entries(INCIDENTS)) ){
 
     for (let i = 0; i < listOfIncidentsAtLocation.length; i++) {
-      
+      let flag = true;
       let incident = listOfIncidentsAtLocation[i];
-      //filter for ids that are not noFilter
-      //incident[form_id]
-      let incidentCategory = incident['category'];
-      let incidentSubcategory = incident['subcategory'];
-      let incidentResolution = incident['resolution'];
 
-      // Only category has filter
-      if ( (filterCategory == incidentCategory)
-        && (filterSubcategory == noFilter)
-        && (filterResolution == noFilter) ) {
-          
-          incidentsToDisplay.push(incident);
-          continue;
+      for (let form_id in elementsWithFilters) {
+        if (incident[form_id] != elementsWithFilters[form_id]) {
+          flag = false;
+          break;
+        }
       }
-
-      // Only subcategory has filter 
-      else if ( (filterCategory == noFilter)
-        && (filterSubcategory == incidentSubcategory)
-        && (filterResolution == noFilter) ) {
-
-          incidentsToDisplay.push(incident);
-          continue;
-      }
-
-      // Only resolution has filter 
-      else if ( (filterCategory == noFilter)
-        && (filterSubcategory == noFilter) 
-        && (filterResolution == incidentResolution) ) {
-
-          incidentsToDisplay.push(incident);
-          continue;
-      }
-
-      // Category and subcategory have filter
-      else if ( (filterCategory == incidentCategory)
-        && (filterSubcategory == incidentSubcategory) 
-        && (filterResolution == noFilter) ){
-
-          incidentsToDisplay.push(incident);
-          continue;
-      }
-
-      // Category and resolution have filter
-      else if ( (filterCategory == incidentCategory)
-        && (filterSubcategory == noFilter) 
-        && (filterResolution == incidentResolution) ) {
-
-          incidentsToDisplay.push(incident);
-          continue;
-      }
-
-      // Subcategory and resolution have filter
-      else if ( (filterCategory == noFilter) 
-        && (filterSubcategory == incidentSubcategory)
-        && (filterResolution == incidentResolution) ){
-
-          incidentsToDisplay.push(incident);
-          continue;
-      }
-
-      // Category, subcategory, and resolution have filter
-      else if ((filterCategory == incidentCategory) 
-        && (filterSubcategory == incidentSubcategory) 
-        && (filterResolution == incidentResolution)) {
-
-          incidentsToDisplay.push(incident);
-          continue;
-      }
+     
+     if (flag == true) {
+      incidentsToDisplay.push(incident);
+     }
 
     }
 
@@ -280,14 +238,20 @@ function compareFilterToMarkerValue(filters, noFilter) {
 
 // Helper to form submit change
 // Display list of Markers on map
-function setMarkers(markersToDisplay){
-  //clearMarkers();
-  for (let i = 0; i < markersToDisplay.length; i++) {
-    let marker = markersToDisplay[i];
-    marker.setMap(MAP);
+// Sets the map on all markers in the array.
+function setMarkers(map) {
+  for (var i = 0; i < MARKERS.length; i++) {
+    MARKERS[i].setMap(map);
   }
-
 }
 
+// Removes the markers from the map, but keeps them in the array.
+function clearMarkers() {
+  setMarkers(null);
+}
 
-
+// Deletes all markers in the array by removing references to them.
+function deleteMarkers() {
+  clearMarkers();
+  MARKERS = [];
+}
