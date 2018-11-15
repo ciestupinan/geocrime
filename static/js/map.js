@@ -131,11 +131,11 @@ function makeInfoWindow(latitude, longitude, listOfIncidentsAtLocation, marker){
     
   for (let i = 0; i < listOfIncidentsAtLocation.length; i++){
     let incident = listOfIncidentsAtLocation[i];
-    contentString = contentString + `<p>datetime: ${incident['datetime']}</p>
-      <p id="category">category: ${incident['category']}</p>
-      <p id="subcategory">subcategory: ${incident['subcategory']}</p>
-      <p>description: ${incident['description']}</p>
-      <p id="resolution">resolution: ${incident['resolution']}</p><hr>`;
+    contentString = contentString + `<p>datetime: ${incident['datetime']}
+      <br>category: ${incident['category']}
+      <br>subcategory: ${incident['subcategory']}
+      <br>description: ${incident['description']}
+      <br>resolution: ${incident['resolution']}</p><hr>`;
   }
 
   contentString = contentString + '</div></div>';
@@ -152,7 +152,8 @@ function makeInfoWindow(latitude, longitude, listOfIncidentsAtLocation, marker){
 
 // Each time form is changed, filter Markers to set on map
 document.getElementById('form').addEventListener('submit', function(evt) {
-
+  evt.preventDefault();
+    console.log("pstt");
   const filterCategory = document.getElementById('category').value;
   const filterSubcategory = document.getElementById('subcategory').value;
   const filterResolution = document.getElementById('resolution').value;
@@ -162,23 +163,24 @@ document.getElementById('form').addEventListener('submit', function(evt) {
 
   // If no filters are set, return all the markers
   if ((filterCategory == noFilter) && (filterSubcategory == noFilter) && (filterResolution == noFilter)) {
+    console.log("hello");
       setMarkers(MARKERS);
       return;
   }
+  else {
+    // Otherwise filters are set, create a list of Markers to display that fit filter criteria
+    const listOfIncidents = compareFilterToMarkerValue(filters, noFilter);
+    const markersToDisplay = createMarkers(listOfIncidents);
 
-  // Otherwise filters are set, create a list of Markers to display that fit filter criteria
-  const listOfIncidents = compareFilterToMarkerValue(filters, noFilter);
-  const markersToDisplay = createMarkers(listOfIncidents);
+    // Tell user if there are no markers that meet their filter search criteria, return nothing
+    if (markersToDisplay.length === 0) {
+      alert('There are no markers to display for your search.');
+      return;
+    }
 
-  // Tell user if there are no markers that meet their filter search criteria, return nothing
-  if (markersToDisplay.length == 0) {
-    alert('There are no markers to display for your search.');
-    return;
+    // Display markers on map
+    setMarkers(markersToDisplay);
   }
-
-  // Display markers on map
-  setMarkers(markersToDisplay);
-
 });
 
 
@@ -196,15 +198,11 @@ function compareFilterToMarkerValue(filters, noFilter) {
   // go through INCIDENTS to see if any meet filter criteria. If yes, add to incidentsToDisplay
   for (let [location,listOfIncidentsAtLocation] of entries){
 
-    let point = location.split(',');
-    let lat = parseFloat(point[0]);
-    let lng = parseFloat(point[1]);
-
     for (let i = 0; i < listOfIncidentsAtLocation.length; i++) {
       
       let incident = listOfIncidentsAtLocation[i];
-
-      let incidentDatetime = incident['datetime'];
+      //filter for ids that are not noFilter
+      //incident[form_id]
       let incidentCategory = incident['category'];
       let incidentSubcategory = incident['subcategory'];
       let incidentResolution = incident['resolution'];
@@ -214,7 +212,7 @@ function compareFilterToMarkerValue(filters, noFilter) {
         && (filterSubcategory == noFilter)
         && (filterResolution == noFilter) ) {
           
-          incidentsToDisplay.append(incident);
+          incidentsToDisplay.push(incident);
           continue;
       }
 
@@ -223,7 +221,7 @@ function compareFilterToMarkerValue(filters, noFilter) {
         && (filterSubcategory == incidentSubcategory)
         && (filterResolution == noFilter) ) {
 
-          incidentsToDisplay.append(incident);
+          incidentsToDisplay.push(incident);
           continue;
       }
 
@@ -232,7 +230,7 @@ function compareFilterToMarkerValue(filters, noFilter) {
         && (filterSubcategory == noFilter) 
         && (filterResolution == incidentResolution) ) {
 
-          incidentsToDisplay.append(incident);
+          incidentsToDisplay.push(incident);
           continue;
       }
 
@@ -241,7 +239,7 @@ function compareFilterToMarkerValue(filters, noFilter) {
         && (filterSubcategory == incidentSubcategory) 
         && (filterResolution == noFilter) ){
 
-          incidentsToDisplay.append(incident);
+          incidentsToDisplay.push(incident);
           continue;
       }
 
@@ -250,7 +248,7 @@ function compareFilterToMarkerValue(filters, noFilter) {
         && (filterSubcategory == noFilter) 
         && (filterResolution == incidentResolution) ) {
 
-          incidentsToDisplay.append(incident);
+          incidentsToDisplay.push(incident);
           continue;
       }
 
@@ -259,7 +257,7 @@ function compareFilterToMarkerValue(filters, noFilter) {
         && (filterSubcategory == incidentSubcategory)
         && (filterResolution == incidentResolution) ){
 
-          incidentsToDisplay.append(incident);
+          incidentsToDisplay.push(incident);
           continue;
       }
 
@@ -268,7 +266,7 @@ function compareFilterToMarkerValue(filters, noFilter) {
         && (filterSubcategory == incidentSubcategory) 
         && (filterResolution == incidentResolution)) {
 
-          incidentsToDisplay.append(incident);
+          incidentsToDisplay.push(incident);
           continue;
       }
 
@@ -283,7 +281,7 @@ function compareFilterToMarkerValue(filters, noFilter) {
 // Helper to form submit change
 // Display list of Markers on map
 function setMarkers(markersToDisplay){
-
+  //clearMarkers();
   for (let i = 0; i < markersToDisplay.length; i++) {
     let marker = markersToDisplay[i];
     marker.setMap(MAP);
