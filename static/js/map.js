@@ -8,11 +8,7 @@ function startApp() {
   *     it will start the function that takes in the data it receieved from the AJAX request
   */
   getIncidentData(function(incidentData) {
-    // console.log(incidentData);
     const markerList = setInitialMarkers(map, incidentData);
-
-    console.log(markerList.length);
-    console.log(markerList);
 
     setUpFormSubmitHandler(map, incidentData, markerList);
     /* can't return incidentData but it won't have the incidentData expected right away because 
@@ -175,14 +171,10 @@ function makeMarkerInfoWindow(latitude, longitude, listOfIncidentsAtLocation, ma
 function setUpFormSubmitHandler(map, incidentData, markerList) {
 
   const filterForm = document.querySelector('#filterForm');
-
-  console.log('in setUpFormSubmitHandler');
-  console.log(markerList);
   
   filterForm.addEventListener('submit',function(evt){
     
     evt.preventDefault();
-    console.log(markerList);
     deleteAllMarkers(markerList);
 
     const category = document.getElementById('category').value;
@@ -191,6 +183,9 @@ function setUpFormSubmitHandler(map, incidentData, markerList) {
     const formFilters = {'category':category, 'subcategory':subcategory, 'resolution':resolution};
 
     const filteredIncidentData = filterIncidentData(map, incidentData, markerList, formFilters);
+    if (Object.keys(filteredIncidentData).length === 0){
+      alert("There aren't any incidents that meet that criteria!");
+    }
     createMarkerList(map, filteredIncidentData, markerList);
     putMarkersOnMap(markerList, map);
     
@@ -198,68 +193,73 @@ function setUpFormSubmitHandler(map, incidentData, markerList) {
 }
 
 
-function filterIncidentData(map, incidentData, markerList, formFilters){
-  const noFilterSelected = '---';
+function filterIncidentData(map, incidentData, markerList, formFilters) {
+  const noFilterSelected = "---";
 
+  console.log(formFilters['category'] === noFilterSelected);
 
   // No filters are selected, create all markers
   if (formFilters['category'] === noFilterSelected
       && formFilters['subcategory'] === noFilterSelected 
       && formFilters['resolution'] === noFilterSelected) {
 
-      createMarkerList(map, incidentData, markerList);
+      return createMarkerList(map, incidentData, markerList);
 
-  } else { 
+  } else {
 
     const filteredIncidentData = {};
-    for (let i = 0; i < incidentData.length; i++) {
 
-      let incident = incidentData[i];
+    for (const [location, listOfIncidentsAtLocation] of Object.entries(incidentData)) {
 
-      // Only resolution filter is selected
-      if (formFilters['category'] === noFilterSelected
-        && formFilters['subcategory'] === noFilterSelected
-        && incident['resolution'] === formFilters['resolution']) {
+      for (const incident of listOfIncidentsAtLocation) {
 
-        addToFilteredDataSet(incident, filteredIncidentData);
+        // Only resolution filter is selected
+        if (formFilters['category'] === noFilterSelected
+          && formFilters['subcategory'] === noFilterSelected
+          && incident['resolution'] === formFilters['resolution']) {
 
-      } // Only subcategory filter is selected
-      else if (formFilters['category'] === noFilterSelected
-        && incident['subcategory'] === formFilters['subcategory']
-        && formFilters['resolution'] === noFilterSelected) {
+          addToFilteredDataSet(incident, filteredIncidentData);
 
-        addToFilteredDataSet(incident, filteredIncidentData);
+        } // Only subcategory filter is selected
+        else if (formFilters['category'] === noFilterSelected
+          && incident['subcategory'] === formFilters['subcategory']
+          && formFilters['resolution'] === noFilterSelected) {
 
-      } // Only category filter is selected
-      else if (incident['category'] === formFilters['category']
-        && formFilters['subcategory'] === noFilterSelected
-        && formFilters['resolution'] === noFilterSelected) {
+          addToFilteredDataSet(incident, filteredIncidentData);
 
-        addToFilteredDataSet(incident, filteredIncidentData);
+        } // Only category filter is selected
+        else if (incident['category'] === formFilters['category']
+          && formFilters['subcategory'] === noFilterSelected
+          && formFilters['resolution'] === noFilterSelected) {
 
-      } // Subcategory and Resolution filters are selected
-      else if (formFilters['category'] === noFilterSelected
-        && incident['subcategory'] === formFilters['subcategory']
-        && incident['resolution'] === formFilters['resolution']) {
+          addToFilteredDataSet(incident, filteredIncidentData);
 
-        addToFilteredDataSet(incident, filteredIncidentData);
+        } // Subcategory and Resolution filters are selected
+        else if (formFilters['category'] === noFilterSelected
+          && incident['subcategory'] === formFilters['subcategory']
+          && incident['resolution'] === formFilters['resolution']) {
 
-      } // Category and Resolution filters are selected 
-      else if (incident['category'] === formFilters['category']
-        && formFilters['subcategory'] === noFilterSelected
-        && incident['resolution'] === formFilters['resolution']) {
-        
-        addToFilteredDataSet(incident, filteredIncidentData);
+          addToFilteredDataSet(incident, filteredIncidentData);
 
-      } // Category and Subcateory filters are selected 
-      else if (incident['category'] === formFilters['category']
-        && incident['subcategory'] === formFilters['subcategory']
-        && formFilters['resolution'] === noFilterSelected) {
+        } // Category and Resolution filters are selected 
+        else if (incident['category'] === formFilters['category']
+          && formFilters['subcategory'] === noFilterSelected
+          && incident['resolution'] === formFilters['resolution']) {
+          
+          addToFilteredDataSet(incident, filteredIncidentData);
 
-        addToFilteredDataSet(incident, filteredIncidentData);
-        
+        } // Category and Subcateory filters are selected 
+        else if (incident['category'] === formFilters['category']
+          && incident['subcategory'] === formFilters['subcategory']
+          && formFilters['resolution'] === noFilterSelected) {
+
+          addToFilteredDataSet(incident, filteredIncidentData);
+        }
+
       }
+
     }
+    
     return filteredIncidentData;
   }
 }
