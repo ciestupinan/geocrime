@@ -8,8 +8,12 @@ function startApp() {
   *     it will start the function that takes in the data it receieved from the AJAX request
   */
   getIncidentData(function(incidentData) {
-    console.log(incidentData);
+    // console.log(incidentData);
     const markerList = setInitialMarkers(map, incidentData);
+
+    console.log(markerList.length);
+    console.log(markerList);
+
     setUpFormSubmitHandler(map, incidentData, markerList);
     /* can't return incidentData but it won't have the incidentData expected right away because 
      * we're still waiting for AJAX request to finish
@@ -18,7 +22,7 @@ function startApp() {
   });
 }
 
-
+// Initialize map
 function initMap() {
   const sfCoords = {lat: 37.7749, lng: -122.4194};  
 
@@ -30,8 +34,6 @@ function initMap() {
 }
 
 
-// Initialize map
-// function applyFunctionToIncidentData(callback) {
 function getIncidentData(callback) {
   // Get crime data from API
   $.ajax({
@@ -45,7 +47,8 @@ function getIncidentData(callback) {
 
   }).done(function(data) {
     const crimeData = extractRelevantData(data);
-    const listOfIncidents = [];
+    // const listOfIncidents = [];
+    const incidentData = {};
 
     for (let i = 0; i < crimeData.length; i++) {
       let incident = crimeData[i];
@@ -58,18 +61,17 @@ function getIncidentData(callback) {
         
         // Add incident lat,lng to Object with value of incident data
         // If incident lat,lng in Object, append incident data to value list
-        if (`${lat}, ${lng}` in listOfIncidents) {
-          listOfIncidents[`${lat}, ${lng}`].push(incident);
-        }
-        else {
-          listOfIncidents[`${lat}, ${lng}`] = [incident];
+        if (`${lat}, ${lng}` in incidentData) {
+          incidentData[`${lat}, ${lng}`].push(incident);
+        } else {
+          incidentData[`${lat}, ${lng}`] = [incident];
         }
 
       }
 
     }
-    // this is returning 
-    callback(listOfIncidents);
+
+    callback(incidentData);
   });
 }
 
@@ -96,8 +98,8 @@ function extractRelevantData(crimeData){
   }
 
   return relevantData;
-
 }
+
 
 function setInitialMarkers(map, incidentData) {
   const markerList = [];
@@ -108,7 +110,7 @@ function setInitialMarkers(map, incidentData) {
 
 
 // Creates list of marker objects
-function createMarkerList(map, incidentData, markerList){
+function createMarkerList(map, incidentData, markerList) {
 
   const entries = Object.entries(incidentData);
      
@@ -119,7 +121,7 @@ function createMarkerList(map, incidentData, markerList){
 
     const marker = createMarkerObject(map, latitude, longitude);
     markerList.push(marker);
-    makeMarkerInfoWindow(latitude, longitude, listOfIncidentsAtLocation, marker);
+    makeMarkerInfoWindow(latitude, longitude, listOfIncidentsAtLocation, marker, map);
   }
 
   return markerList;
@@ -141,7 +143,7 @@ function createMarkerObject(map, latitude, longitude) {
 
 
 // Make info window with all of the data for the marker at lat,lng
-function makeMarkerInfoWindow(latitude, longitude, listOfIncidentsAtLocation, marker){
+function makeMarkerInfoWindow(latitude, longitude, listOfIncidentsAtLocation, marker, map){
   
   let contentString = `<div id="content">
     <div id="siteNotice"></div>
@@ -164,107 +166,116 @@ function makeMarkerInfoWindow(latitude, longitude, listOfIncidentsAtLocation, ma
     content: contentString
   });
   marker.addListener('click', function() {
-    infowindow.open(MAP, marker);
+    infowindow.open(map, marker);
   });
 
 }
 
 
 function setUpFormSubmitHandler(map, incidentData, markerList) {
-  deleteAllMarkers(map,incidentData,markerList);
 
-  // const filterForm = document.querySelector('#filterForm');
-  // filterForm.addEventListener('submit',function(evt){
-  //   evt.preventDefault();
-  //   filterMarkers(map, incidentData, markerList, );
-  // });
-  console.log(incidentData);
-  $( "filterForm" ).submit(function( evt ) {
-    formValues =  $( this ).serializeArray();
-    console.log(formValues);
+  const filterForm = document.querySelector('#filterForm');
+
+  console.log('in setUpFormSubmitHandler');
+  console.log(markerList);
+  
+  filterForm.addEventListener('submit',function(evt){
+    
     evt.preventDefault();
+    console.log(markerList);
+    deleteAllMarkers(markerList);
+
+    const category = document.getElementById('category').value;
+    const subcategory = document.getElementById('subcategory').value;
+    const resolution = document.getElementById('resolution').value;
+    const formFilters = {'category':category, 'subcategory':subcategory, 'resolution':resolution};
+
+    const filteredIncidentData = filterIncidentData(map, incidentData, markerList, formFilters);
+    createMarkerList(map, filteredIncidentData, markerList);
+    putMarkersOnMap(markerList, map);
+    
   });
-
-
-
 }
-  // Each time form is changed, filter Markers to set on map
-//   document.getElementById('form').addEventListener('submit', function(evt) {
-//     evt.preventDefault();
-
-//     const elements = document.getElementById('form').elements;
-//     //console.log(elements);
-//     // console.log(typeof(elements));
-//     const noFilterSet = '---';
-
-//     // contains form_ids of form elements with filter submission
-//     const filterSet = {};
-//     for (let i=0;i<elements.length-1;i++){
-//       if (elements[i].value != noFilterSet) {
-//         filterSet[elements[i].id] = elements[i].value;
-//       }
-//     }
-
-//     // console.log(filterSet);
-
-//     // If no filters are set, return all the markers
-//     if (Object.keys(filterSet).length === 0) {
-//         // refill markerlist with the full set of incidents
-//         putMarkersOnMap(markerList, map);
-//         return;
-//     } else {
 
 
-//       // Otherwise filters are set, create a list of Markers to display that fit filter criteria
-//       const listOfIncidents = compareFilterToDataValue(filterSet);
-//       const markersToDisplay = createMarkers(listOfIncidents);
-//       //MARKERS = createMarkers(listOfIncidents);
-//       // Tell user if there are no markers that meet their filter search criteria, return nothing
-//       if (markersToDisplay.length === 0) {
-//       // if (MARKERS.length == 0){
-//         alert('There are no markers to display for your search.');
-//         return;
-//       }
-
-//       // Display markers on map
-//       setMarkers(MAP);
-//     }
-//   });
-// }
+function filterIncidentData(map, incidentData, markerList, formFilters){
+  const noFilterSelected = '---';
 
 
+  // No filters are selected, create all markers
+  if (formFilters['category'] === noFilterSelected
+      && formFilters['subcategory'] === noFilterSelected 
+      && formFilters['resolution'] === noFilterSelected) {
 
-// Helper to form submit change
-// Given a list of filter values, select Markers that meet that criteria
-function compareFilterToDataValue(elementsWithFilters) {
+      createMarkerList(map, incidentData, markerList);
 
-  // List of incidents that meet filter criteria
-  const incidentsToDisplay = [];
+  } else { 
 
+    const filteredIncidentData = {};
+    for (let i = 0; i < incidentData.length; i++) {
 
-  // go through INCIDENTS to see if any meet filter criteria. If yes, add to incidentsToDisplay
-  for (let [location,listOfIncidentsAtLocation] of (Object.entries(INCIDENTS)) ){
+      let incident = incidentData[i];
 
-    for (let i = 0; i < listOfIncidentsAtLocation.length; i++) {
-      let flag = true;
-      let incident = listOfIncidentsAtLocation[i];
+      // Only resolution filter is selected
+      if (formFilters['category'] === noFilterSelected
+        && formFilters['subcategory'] === noFilterSelected
+        && incident['resolution'] === formFilters['resolution']) {
 
-      for (let form_id in elementsWithFilters) {
-        if (incident[form_id] != elementsWithFilters[form_id]) {
-          flag = false;
-          break;
-        }
+        addToFilteredDataSet(incident, filteredIncidentData);
+
+      } // Only subcategory filter is selected
+      else if (formFilters['category'] === noFilterSelected
+        && incident['subcategory'] === formFilters['subcategory']
+        && formFilters['resolution'] === noFilterSelected) {
+
+        addToFilteredDataSet(incident, filteredIncidentData);
+
+      } // Only category filter is selected
+      else if (incident['category'] === formFilters['category']
+        && formFilters['subcategory'] === noFilterSelected
+        && formFilters['resolution'] === noFilterSelected) {
+
+        addToFilteredDataSet(incident, filteredIncidentData);
+
+      } // Subcategory and Resolution filters are selected
+      else if (formFilters['category'] === noFilterSelected
+        && incident['subcategory'] === formFilters['subcategory']
+        && incident['resolution'] === formFilters['resolution']) {
+
+        addToFilteredDataSet(incident, filteredIncidentData);
+
+      } // Category and Resolution filters are selected 
+      else if (incident['category'] === formFilters['category']
+        && formFilters['subcategory'] === noFilterSelected
+        && incident['resolution'] === formFilters['resolution']) {
+        
+        addToFilteredDataSet(incident, filteredIncidentData);
+
+      } // Category and Subcateory filters are selected 
+      else if (incident['category'] === formFilters['category']
+        && incident['subcategory'] === formFilters['subcategory']
+        && formFilters['resolution'] === noFilterSelected) {
+
+        addToFilteredDataSet(incident, filteredIncidentData);
+        
       }
-     
-     if (flag == true) {
-      incidentsToDisplay.push(incident);
-     }
-
     }
+    return filteredIncidentData;
+  }
+}
 
+
+function addToFilteredDataSet(incident, filteredIncidentData){
+
+  let lat = incident['latitude'];
+  let lng = incident['longitude'];
+
+  if (`${lat}, ${lng}` in filteredIncidentData) {
+    filteredIncidentData[`${lat}, ${lng}`].push(incident);
+  } else {
+    filteredIncidentData[`${lat}, ${lng}`] = [incident];
   }
 
-  return incidentsToDisplay;
 }
 
 
@@ -279,11 +290,15 @@ function putMarkersOnMap(markerList, map) {
 
 // Deletes all markers in the array by removing references to them.
 function deleteAllMarkers(markerList) {
+
+  // Set original markerList map to null. This is the only way to remove markers from Map
   putMarkersOnMap(markerList, null);
   
   while (markerList.length > 0){
     markerList.pop();
   }
+  
+  return markerList;
 
 }
 
