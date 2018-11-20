@@ -80,9 +80,13 @@ function extractRelevantData(crimeData){
 
   for (let i = 0; i < crimeData.length; i++) {
     let col = crimeData[i];
+    const datetimeStr = col['incident_datetime']
+    const date = datetimeStr.slice(0,10);
+    const time = datetimeStr.slice(11);
 
     relevantData.push({
-      'datetime': col['incident_datetime'],
+      'date': date,
+      'time': time,
       'category': col['incident_category'],
       'subcategory': col['incident_subcategory'],
       'description': col['incident_description'],
@@ -149,7 +153,9 @@ function makeMarkerInfoWindow(latitude, longitude, listOfIncidentsAtLocation, ma
   
   for (let i = 0; i < listOfIncidentsAtLocation.length; i++) {
     let incident = listOfIncidentsAtLocation[i];
-    contentString = contentString + `<p>datetime: ${incident['datetime']}
+
+    contentString = contentString + `<p>date: ${incident['date']}
+      <br>time: ${incident['time']}
       <br>category: ${incident['category']}
       <br>subcategory: ${incident['subcategory']}
       <br>description: ${incident['description']}
@@ -171,7 +177,7 @@ function makeMarkerInfoWindow(latitude, longitude, listOfIncidentsAtLocation, ma
 function setUpFormSubmitHandler(map, incidentData, markerList) {
 
   const filterForm = document.querySelector('#filterForm');
-  
+
   filterForm.addEventListener('submit',function(evt){
     
     evt.preventDefault();
@@ -180,6 +186,8 @@ function setUpFormSubmitHandler(map, incidentData, markerList) {
     const category = document.getElementById('category').value;
     const subcategory = document.getElementById('subcategory').value;
     const resolution = document.getElementById('resolution').value;
+
+
     const formFilters = {'category':category, 'subcategory':subcategory, 'resolution':resolution};
 
     const filteredIncidentData = filterIncidentData(map, incidentData, markerList, formFilters);
@@ -190,13 +198,13 @@ function setUpFormSubmitHandler(map, incidentData, markerList) {
     putMarkersOnMap(markerList, map);
     
   });
+
 }
+
 
 
 function filterIncidentData(map, incidentData, markerList, formFilters) {
   const noFilterSelected = "---";
-
-  console.log(formFilters['category'] === noFilterSelected);
 
   // No filters are selected, create all markers
   if (formFilters['category'] === noFilterSelected
