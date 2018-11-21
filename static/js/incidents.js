@@ -10,13 +10,15 @@ function startApp() {
   getIncidentData(function(incidentData) {
     const markerList = setInitialMarkers(map, incidentData);
 
-    setUpFormSubmitHandler(map, incidentData, markerList);
+    const markerCluster = createMarkerCluster(map, markerList);
+    setUpFormSubmitHandler(map, incidentData, markerList, markerCluster);
     /* can't return incidentData but it won't have the incidentData expected right away because 
      * we're still waiting for AJAX request to finish
      * */
     
   });
 }
+
 
 
 // Initialize map
@@ -29,6 +31,7 @@ function initMap() {
     zoom: 12
   });
 }
+
 
 
 function getIncidentData(callback) {
@@ -73,6 +76,7 @@ function getIncidentData(callback) {
 }
 
 
+
 // Return relevant data at given marker (passed in through data)
 // This should only be done once, to create INCIDENTS in initMap()
 function extractRelevantData(crimeData){
@@ -104,14 +108,17 @@ function extractRelevantData(crimeData){
 }
 
 
+
 function formatTime(datetimeStr){
   const datetime = new Date(datetimeStr);
-  const hours = (datetime.getHours() % 12);
+  const hourDigit = datetime.getHours() % 12;
+  const hours = (hourDigit === 0) ? 12 : hourDigit;
   const minutes = addZero(datetime.getMinutes());
   const ampm = (datetime.getHours() >= 12) ? 'PM' : 'AM';
   
   return `${hours}:${minutes} ${ampm}`
 }
+
 
 
 function addZero(time) {
@@ -122,12 +129,14 @@ function addZero(time) {
 }
 
 
+
 function setInitialMarkers(map, incidentData) {
   const markerList = [];
   createMarkerList(map, incidentData, markerList);
   putMarkersOnMap(markerList, map);
   return markerList;
 }
+
 
 
 // Creates list of marker objects
@@ -149,6 +158,7 @@ function createMarkerList(map, incidentData, markerList) {
 }
 
 
+
 // Helper to createMarkers()
 // Creates each marker object
 function createMarkerObject(map, latitude, longitude) {
@@ -161,6 +171,7 @@ function createMarkerObject(map, latitude, longitude) {
 
   return marker;
 }
+
 
 
 // Make info window with all of the data for the marker at lat,lng
@@ -194,7 +205,8 @@ function makeMarkerInfoWindow(latitude, longitude, listOfIncidentsAtLocation, ma
 }
 
 
-function setUpFormSubmitHandler(map, incidentData, markerList) {
+
+function setUpFormSubmitHandler(map, incidentData, markerList, markerCluster) {
 
   const filterForm = document.querySelector('#filterForm');
 
@@ -202,6 +214,7 @@ function setUpFormSubmitHandler(map, incidentData, markerList) {
     
     evt.preventDefault();
     deleteAllMarkers(markerList);
+    markerCluster.clearMarkers();
 
     const category = document.getElementById('category').value;
     const subcategory = document.getElementById('subcategory').value;
@@ -220,12 +233,15 @@ function setUpFormSubmitHandler(map, incidentData, markerList) {
     
     if (Object.keys(filteredIncidentData).length === 0){
       alert("There aren't any incidents that meet that criteria!");
+
     } else {
       createMarkerList(map, filteredIncidentData, markerList);
+      markerCluster = createMarkerCluster(map, markerList);
       putMarkersOnMap(markerList, map);
     }
   });
 }
+
 
 
 function filterIncidentData(map, incidentData, markerList, formFilters) {
@@ -263,6 +279,7 @@ function filterIncidentData(map, incidentData, markerList, formFilters) {
 }
 
 
+
 function addToFilteredDataSet(incident, filteredIncidentData){
 
   let lat = incident['latitude'];
@@ -276,12 +293,14 @@ function addToFilteredDataSet(incident, filteredIncidentData){
 }
 
 
+
 // Sets the map on all markers in the array.
 function putMarkersOnMap(markerList, map) {
   for (var i = 0; i < markerList.length; i++) {
     markerList[i].setMap(map);
   }
 }
+
 
 
 // Deletes all markers in the array by removing references to them.
@@ -297,4 +316,9 @@ function deleteAllMarkers(markerList) {
 
 
 
-
+function createMarkerCluster(map, markerList){
+  
+  return new MarkerClusterer(map,
+        markerList, 
+        {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+}
