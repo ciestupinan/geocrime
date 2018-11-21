@@ -8,10 +8,16 @@ function startApp() {
   *     it will start the function that takes in the data it receieved from the AJAX request
   */
   getIncidentData(function(incidentData) {
-    const markerList = setInitialMarkers(map, incidentData);
-
-    const markerCluster = createMarkerCluster(map, markerList);
-    setUpFormSubmitHandler(map, incidentData, markerList, markerCluster);
+    const oms = new OverlappingMarkerSpiderfier(map, {
+      markersWontMove: true,
+      markersWontHide: true,
+      basicFormatEvents: true,
+      keepSpiderfied: true
+    });
+    const markerList = setInitialMarkers(map, incidentData, oms);
+    // const markerCluster = createMarkerCluster(map, markerList);
+    // setUpFormSubmitHandler(map, incidentData, markerList, markerCluster);
+    setUpFormSubmitHandler(map, incidentData, markerList, oms);
     /* can't return incidentData but it won't have the incidentData expected right away because 
      * we're still waiting for AJAX request to finish
      * */
@@ -46,31 +52,7 @@ function getIncidentData(callback) {
     }
 
   }).done(function(data) {
-    const crimeData = extractRelevantData(data);
-    // const listOfIncidents = [];
-    const incidentData = {};
-
-    for (let i = 0; i < crimeData.length; i++) {
-      let incident = crimeData[i];
-
-      let lat = incident['latitude']
-      let lng = incident['longitude']
-
-      // Don't use data that doesn't have lat,lng
-      if (!isNaN(lat) && !isNaN(lng)){
-        
-        // Add incident lat,lng to Object with value of incident data
-        // If incident lat,lng in Object, append incident data to value list
-        if (`${lat}, ${lng}` in incidentData) {
-          incidentData[`${lat}, ${lng}`].push(incident);
-        } else {
-          incidentData[`${lat}, ${lng}`] = [incident];
-        }
-
-      }
-
-    }
-
+    const incidentData = extractRelevantData(data);
     callback(incidentData);
   });
 }
@@ -85,22 +67,27 @@ function extractRelevantData(crimeData){
 
   for (let i = 0; i < crimeData.length; i++) {
     let col = crimeData[i];
-    const datetimeStr = col['incident_datetime']
-    const date = datetimeStr.slice(0,10);
 
-    const time = formatTime(datetimeStr);
+    const lat = parseFloat(col['latitude']);
+    const lng = parseFloat(col['longitude']);
 
+    if (lat != NaN && lng !=NaN) {
+      
+      const datetimeStr = col['incident_datetime'];
+      const date = datetimeStr.slice(0,10);
+      const time = formatTime(datetimeStr);
 
-    relevantData.push({
-      'date': date,
-      'time': time,
-      'category': col['incident_category'],
-      'subcategory': col['incident_subcategory'],
-      'description': col['incident_description'],
-      'resolution': col['resolution'],
-      'latitude': parseFloat(col['latitude']),
-      'longitude': parseFloat(col['longitude'])
-    });
+      relevantData.push({
+        'date': date,
+        'time': time,
+        'category': col['incident_category'],
+        'subcategory': col['incident_subcategory'],
+        'description': col['incident_description'],
+        'resolution': col['resolution'],
+        'latitude': parseFloat(col['latitude']),
+        'longitude': parseFloat(col['longitude'])
+      });
+    }
 
   }
 
@@ -130,9 +117,9 @@ function addZero(time) {
 
 
 
-function setInitialMarkers(map, incidentData) {
+function setInitialMarkers(map, incidentData, oms) {
   const markerList = [];
-  createMarkerList(map, incidentData, markerList);
+  createMarkerList(map, incidentData, markerList, oms);
   putMarkersOnMap(markerList, map);
   return markerList;
 }
@@ -140,18 +127,15 @@ function setInitialMarkers(map, incidentData) {
 
 
 // Creates list of marker objects
-function createMarkerList(map, incidentData, markerList) {
+function createMarkerList(map, incidentData, markerList, oms) {
 
   const entries = Object.entries(incidentData);
      
-  for (let [location,listOfIncidentsAtLocation] of entries) {
-    let point = location.split(',');
-    let latitude = parseFloat(point[0]);
-    let longitude = parseFloat(point[1]);
+  for (let [id,incident] of entries) {
 
-    const marker = createMarkerObject(map, latitude, longitude);
+    const marker = createMarkerObject(map, incident, oms);
     markerList.push(marker);
-    makeMarkerInfoWindow(latitude, longitude, listOfIncidentsAtLocation, marker, map);
+    makeMarkerInfoWindow(incident, marker, map);
   }
 
   return markerList;
@@ -159,64 +143,55 @@ function createMarkerList(map, incidentData, markerList) {
 
 
 // Creates each marker object
-function createMarkerObject(map, latitude, longitude) {
-  
+function createMarkerObject(map, incident, oms) {
+  const latitude = incident['latitude'];
+  const longitude = incident['longitude'];
+
+
   const marker = new google.maps.Marker({
     position: {lat: latitude, lng: longitude},
     title: `${latitude}, ${longitude}`,
-    map: map
   }); 
 
-  marker.addListener('click', function() {
-    map.setZoom(17);
-    map.setCenter(marker.getPosition());
+  const infowindow = new google.maps.InfoWindow();
+
+  google.maps.event.addListener(marker, 'spider_click', function(e) {
+    infowindow.setContent(makeMarkerInfoWindow(incident, marker, map));
+    infowindow.open(map, marker);
   });
+  oms.addMarker(marker);
+
   return marker;
 }
 
 
-
-// Make info window with all of the data for the marker at lat,lng
-function makeMarkerInfoWindow(latitude, longitude, listOfIncidentsAtLocation, marker, map){
-  
-  let contentString = `<div id="content">
-    <div id="siteNotice"></div>
-    <p id="firstHeading" class="firstHeading">
-    <b>Crimes at (${latitude},${longitude})</b></p>
-    <div id="bodyContent">`;
-  
-  for (let i = 0; i < listOfIncidentsAtLocation.length; i++) {
-    let incident = listOfIncidentsAtLocation[i];
-
-    contentString = contentString + `<p>date: ${incident['date']}
+function makeMarkerInfoWindow(incident, marker, map){
+  const contentString = `<div id="content">
+      <div id="siteNotice"></div>
+      <p id="firstHeading" class="firstHeading">
+      <b>Crimes at (${incident['latitude']},${incident['longitude']})</b></p>
+      <div id="bodyContent">
+      <p>date: ${incident['date']}
       <br>time: ${incident['time']}
       <br>category: ${incident['category']}
       <br>subcategory: ${incident['subcategory']}
       <br>description: ${incident['description']}
-      <br>resolution: ${incident['resolution']}</p><hr>`;
-  }
+      <br>resolution: ${incident['resolution']}</p><hr>
+      </div></div>`;
 
-  contentString = contentString + '</div></div>';
-
-  const infowindow = new google.maps.InfoWindow({
-    content: contentString
-  });
-  marker.addListener('click', function() {
-    infowindow.open(map, marker);
-  });
+  return contentString
 }
 
 
-
-function setUpFormSubmitHandler(map, incidentData, markerList, markerCluster) {
-
+// function setUpFormSubmitHandler(map, incidentData, markerList, markerCluster) {
+function setUpFormSubmitHandler(map, incidentData, markerList, oms) {
   const filterForm = document.querySelector('#filterForm');
 
   filterForm.addEventListener('submit',function(evt){
     
     evt.preventDefault();
     deleteAllMarkers(markerList);
-    removeMarkerClusters(markerCluster);
+    // removeMarkerClusters(markerCluster);
     resetMap(map);
 
     const category = document.getElementById('category').value;
@@ -232,14 +207,14 @@ function setUpFormSubmitHandler(map, incidentData, markerList, markerCluster) {
         'date':(date === "") ? '---' : date
       };
 
-    const filteredIncidentData = filterIncidentData(map, incidentData, markerList, formFilters);
+    const filteredIncidentData = filterIncidentData(incidentData, formFilters);
     
-    if (Object.keys(filteredIncidentData).length === 0){
+    if (filteredIncidentData.length === 0){
       alert("There aren't any incidents that meet that criteria!");
 
     } else {
-      createMarkerList(map, filteredIncidentData, markerList);
-      markerCluster = createMarkerCluster(map, markerList);
+      createMarkerList(map, filteredIncidentData, markerList, oms);
+      // markerCluster = createMarkerCluster(map, markerList);
       putMarkersOnMap(markerList, map);
     }
   });
@@ -257,33 +232,33 @@ function resetMap(map){
   map.setCenter(sfCoords);
 }
 
-function filterIncidentData(map, incidentData, markerList, formFilters) {
+function filterIncidentData(incidentData, formFilters) {
   const noFilterSelected = "---";
-  let filteredIncidentData = {};
+  let filteredIncidentData = [];
   let incidentDataToFilterThrough = incidentData; 
 
 
-  for (const [filter, filterValue] of Object.entries(formFilters)) {
+  for (let [filter, filterValue] of Object.entries(formFilters)) {
     
     if (filterValue != "---") {
       
-      for (const [location, listOfIncidentsAtLocation] of Object.entries(incidentDataToFilterThrough)) {
-        for (const incident of listOfIncidentsAtLocation) {
-          
-          if (filterValue === incident[filter]){
+      for (let i = 0; i < incidentDataToFilterThrough.length; i++) {
 
-            addToFilteredDataSet(incident, filteredIncidentData);
-          } 
-          // If time filter is picked, filter by time
-          else if ( (filterValue === "AM" || filterValue === "PM") && filterValue === incident[filter].slice(-2)){
+        let incident = incidentDataToFilterThrough[i];
+        if (filterValue === incident[filter]){
 
-            addToFilteredDataSet(incident, filteredIncidentData);
-          }
+          filteredIncidentData.push(incident);
+        } 
+        // If time filter is picked, filter by time
+        else if ( (filterValue === "AM" || filterValue === "PM") && filterValue === incident[filter].slice(-2)){
+
+          filteredIncidentData.push(incident);
         }
+        
       }
 
       incidentDataToFilterThrough = filteredIncidentData;
-      filteredIncidentData = {};
+      filteredIncidentData = [];
     }
     
   }
@@ -291,19 +266,6 @@ function filterIncidentData(map, incidentData, markerList, formFilters) {
   return incidentDataToFilterThrough;
 }
 
-
-
-function addToFilteredDataSet(incident, filteredIncidentData){
-
-  let lat = incident['latitude'];
-  let lng = incident['longitude'];
-
-  if (`${lat}, ${lng}` in filteredIncidentData) {
-    filteredIncidentData[`${lat}, ${lng}`].push(incident);
-  } else {
-    filteredIncidentData[`${lat}, ${lng}`] = [incident];
-  }
-}
 
 
 
