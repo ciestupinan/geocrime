@@ -1,6 +1,12 @@
+
 #map {
+	height:650px;
 }
 
-.container {
-	height:100%;
+.col-4 {
+	padding: 0px;
+}
+
+#filterForm {
+	padding:30px;
 }
