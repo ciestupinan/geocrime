@@ -158,8 +158,6 @@ function createMarkerList(map, incidentData, markerList) {
 }
 
 
-
-// Helper to createMarkers()
 // Creates each marker object
 function createMarkerObject(map, latitude, longitude) {
   
@@ -169,6 +167,10 @@ function createMarkerObject(map, latitude, longitude) {
     map: map
   }); 
 
+  marker.addListener('click', function() {
+    map.setZoom(17);
+    map.setCenter(marker.getPosition());
+  });
   return marker;
 }
 
@@ -214,7 +216,8 @@ function setUpFormSubmitHandler(map, incidentData, markerList, markerCluster) {
     
     evt.preventDefault();
     deleteAllMarkers(markerList);
-    markerCluster.clearMarkers();
+    removeMarkerClusters(markerCluster);
+    resetMap(map);
 
     const category = document.getElementById('category').value;
     const subcategory = document.getElementById('subcategory').value;
@@ -243,6 +246,16 @@ function setUpFormSubmitHandler(map, incidentData, markerList, markerCluster) {
 }
 
 
+function removeMarkerClusters(markerCluster){
+  markerCluster.clearMarkers();
+  markerCluster.resetViewport();
+}
+
+function resetMap(map){
+  const sfCoords = {lat: 37.7749, lng: -122.4194};  
+  map.setZoom(12);
+  map.setCenter(sfCoords);
+}
 
 function filterIncidentData(map, incidentData, markerList, formFilters) {
   const noFilterSelected = "---";
@@ -320,5 +333,6 @@ function createMarkerCluster(map, markerList){
   
   return new MarkerClusterer(map,
         markerList, 
-        {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+        {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
+          setZoom: 12});
 }
