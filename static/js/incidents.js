@@ -3,28 +3,43 @@
 
 function startApp() {
   const map = initMap();
-  var myIncidentData = 0;
   /* incidentData is called this because it assumes once AJAX request is finished, 
   *     it will start the function that takes in the data it receieved from the AJAX request
   */
   getIncidentData(function(incidentData) {
+    
     const oms = new OverlappingMarkerSpiderfier(map, {
       markersWontMove: true,
       markersWontHide: true,
       basicFormatEvents: true,
       keepSpiderfied: true
     });
+
+    oms.addListener('format', function(marker, status) {
+      var iconURL = status == OverlappingMarkerSpiderfier.markerStatus.SPIDERFIED ? getIcon(marker['incident']) :
+        status == OverlappingMarkerSpiderfier.markerStatus.SPIDERFIABLE ? 'static/js/marker-plus.svg' :
+        status == OverlappingMarkerSpiderfier.markerStatus.UNSPIDERFIABLE ? getIcon(marker['incident']):
+       'static/js/marker-plus.svg';
+      marker.setIcon({
+        url: iconURL,
+        scaledSize: new google.maps.Size(15,15)
+      });
+    });
+
+
     const markerList = setInitialMarkers(map, incidentData, oms);
-    // const markerCluster = createMarkerCluster(map, markerList);
-    // setUpFormSubmitHandler(map, incidentData, markerList, markerCluster);
-    setUpFormSubmitHandler(map, incidentData, markerList, oms);
+    const markerCluster = createMarkerCluster(map, markerList);
+    setUpFormSubmitHandler(map, incidentData, markerList, markerCluster, oms);
+
+    
+
+    // setUpFormSubmitHandler(map, incidentData, markerList, oms);
     /* can't return incidentData but it won't have the incidentData expected right away because 
      * we're still waiting for AJAX request to finish
      * */
     
   });
 }
-
 
 
 // Initialize map
@@ -128,12 +143,11 @@ function setInitialMarkers(map, incidentData, oms) {
 
 // Creates list of marker objects
 function createMarkerList(map, incidentData, markerList, oms) {
-
-  const entries = Object.entries(incidentData);
      
-  for (let [id,incident] of entries) {
+  for (let i = 0; i < incidentData.length; i++) {
+    let incident = incidentData[i];
 
-    const marker = createMarkerObject(map, incident, oms);
+    let marker = createMarkerObject(map, incident, oms);
     markerList.push(marker);
     makeMarkerInfoWindow(incident, marker, map);
   }
@@ -144,13 +158,16 @@ function createMarkerList(map, incidentData, markerList, oms) {
 
 // Creates each marker object
 function createMarkerObject(map, incident, oms) {
+  
   const latitude = incident['latitude'];
   const longitude = incident['longitude'];
-
+  const icon = getIcon(incident);
 
   const marker = new google.maps.Marker({
     position: {lat: latitude, lng: longitude},
     title: `${latitude}, ${longitude}`,
+    icon: icon,
+    incident: incident
   }); 
 
   const infowindow = new google.maps.InfoWindow();
@@ -159,11 +176,63 @@ function createMarkerObject(map, incident, oms) {
     infowindow.setContent(makeMarkerInfoWindow(incident, marker, map));
     infowindow.open(map, marker);
   });
+
+
   oms.addMarker(marker);
+
+  
 
   return marker;
 }
 
+
+function getIcon(incident){
+
+  let category = incident['category'];
+
+  const icons = {
+    'Arson': 'static/images/aqua.png',
+    'Assault': 'static/images/aqua_black_outline.png',
+    'Burglary': 'static/images/aqua_outline.png',
+    'Case Closure': 'static/images/black.png',
+    'Civil Sidewalks': 'static/images/black_outline.png',
+    'Courtesy Report': 'static/images/blue.png',
+    'Disorderly Conduct': 'static/images/blue_outline.png',
+    'Drug Offense': 'static/images/brown.png',
+    'Embezzlement': 'static/images/brown_outline.png',
+    'Fire Report': 'static/images/darkgreen.png',
+    'Forgery And Counterfeiting': 'static/images/darkgreen_outline.png',
+    'Fraud': 'static/images/fuscia.png',
+    'Larceny Theft': 'static/images/fuscia_black_outline.png',
+    'Lost Property': 'static/images/fuscia_outline.png',
+    'Malicious Mischief': 'static/images/green.png',
+    'Miscellaneous Investigation': 'static/images/green_black_outline.png',
+    'Missing Person': 'static/images/green_outline.png',
+    'Motor Vehicle Theft': 'static/images/grey.png',
+    'Non-Criminal': 'static/images/grey_outline.png',
+    'Offences Against The Family And Children': 'static/images/lightblue.png',
+    'Other': 'static/images/lightblue_outline.png',
+    'Other Miscellaneous': 'static/images/lightgreen.png',
+    'Other Offenses': 'static/images/lightgreen_outline.png',
+    'Rape': 'static/images/orange.png',
+    'Recovered Vehicle': 'static/images/orange_outline.png',
+    'Robbery': 'static/images/pink.png',
+    'Sex Offense': 'static/images/pink_black_outline.png',
+    'Stolen Property': 'static/images/pink_outline.png',
+    'Suspicious Occ': 'static/images/purple.png',
+    'Traffic Collision': 'static/images/purple_outline.png',
+    'Traffic Violation Arrest': 'static/images/red.png',
+    'Vandalism': 'static/images/red_outline.png',
+    'Warrant': 'static/images/yellow.png',
+    'Weapons Carrying Etc': 'static/images/yellow_black_outline.png',
+    'Weapons Offense': 'static/images/yellow_outline.png'
+  };
+
+  // console.log(typeof(icons[category]));
+  // console.log(icons[category]);
+  return icons[category]
+
+}
 
 function makeMarkerInfoWindow(incident, marker, map){
   const contentString = `<div id="content">
@@ -183,15 +252,16 @@ function makeMarkerInfoWindow(incident, marker, map){
 }
 
 
-// function setUpFormSubmitHandler(map, incidentData, markerList, markerCluster) {
-function setUpFormSubmitHandler(map, incidentData, markerList, oms) {
+function setUpFormSubmitHandler(map, incidentData, markerList, markerCluster, oms) {
+// function setUpFormSubmitHandler(map, incidentData, markerList, oms) {
   const filterForm = document.querySelector('#filterForm');
+  console.log(map.getZoom());
 
   filterForm.addEventListener('submit',function(evt){
     
     evt.preventDefault();
     deleteAllMarkers(markerList);
-    // removeMarkerClusters(markerCluster);
+    removeMarkerClusters(markerCluster);
     resetMap(map);
 
     const category = document.getElementById('category').value;
@@ -214,7 +284,7 @@ function setUpFormSubmitHandler(map, incidentData, markerList, oms) {
 
     } else {
       createMarkerList(map, filteredIncidentData, markerList, oms);
-      // markerCluster = createMarkerCluster(map, markerList);
+      markerCluster = createMarkerCluster(map, markerList);
       putMarkersOnMap(markerList, map);
     }
   });
@@ -296,5 +366,6 @@ function createMarkerCluster(map, markerList){
   return new MarkerClusterer(map,
         markerList, 
         {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
-          setZoom: 12});
+        setMaxZoom: 9
+        });
 }
