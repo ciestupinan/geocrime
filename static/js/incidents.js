@@ -7,7 +7,7 @@ function startApp() {
   *     it will start the function that takes in the data it receieved from the AJAX request
   */
   getIncidentData(function(incidentData) {
-    
+
     const oms = new OverlappingMarkerSpiderfier(map, {
       markersWontMove: true,
       markersWontHide: true,
@@ -16,12 +16,8 @@ function startApp() {
     });
 
     oms.addListener('format', function(marker, status) {
-      var iconURL = status == OverlappingMarkerSpiderfier.markerStatus.SPIDERFIED ? getIcon(marker['incident']) :
-        status == OverlappingMarkerSpiderfier.markerStatus.SPIDERFIABLE ? 'static/js/marker-plus.svg' :
-        status == OverlappingMarkerSpiderfier.markerStatus.UNSPIDERFIABLE ? getIcon(marker['incident']):
-       'static/js/marker-plus.svg';
       marker.setIcon({
-        url: iconURL,
+        url: getIconURL(marker, status),
         scaledSize: new google.maps.Size(15,15)
       });
     });
@@ -29,6 +25,7 @@ function startApp() {
 
     const markerList = setInitialMarkers(map, incidentData, oms);
     const markerCluster = createMarkerCluster(map, markerList);
+
     setUpFormSubmitHandler(map, incidentData, markerList, markerCluster, oms);
 
     
@@ -39,6 +36,19 @@ function startApp() {
      * */
     
   });
+}
+
+function getIconURL(marker, status) {
+  if (status === OverlappingMarkerSpiderfier.markerStatus.SPIDERFIED) {
+    return getIcon(marker['incident'])
+  } else if (status === OverlappingMarkerSpiderfier.markerStatus.SPIDERFIABLE) {
+    return 'static/js/marker-plus.svg'
+  } else if (status === OverlappingMarkerSpiderfier.markerStatus.UNSPIDERFIABLE) {
+    return getIcon(marker['incident'])
+  } else {
+    return 'static/js/marker-plus.svg'
+  }
+
 }
 
 
@@ -177,10 +187,7 @@ function createMarkerObject(map, incident, oms) {
     infowindow.open(map, marker);
   });
 
-
   oms.addMarker(marker);
-
-  
 
   return marker;
 }
@@ -228,10 +235,7 @@ function getIcon(incident){
     'Weapons Offense': 'static/images/yellow_outline.png'
   };
 
-  // console.log(typeof(icons[category]));
-  // console.log(icons[category]);
   return icons[category]
-
 }
 
 function makeMarkerInfoWindow(incident, marker, map){
@@ -255,7 +259,6 @@ function makeMarkerInfoWindow(incident, marker, map){
 function setUpFormSubmitHandler(map, incidentData, markerList, markerCluster, oms) {
 // function setUpFormSubmitHandler(map, incidentData, markerList, oms) {
   const filterForm = document.querySelector('#filterForm');
-  console.log(map.getZoom());
 
   filterForm.addEventListener('submit',function(evt){
     
@@ -296,11 +299,13 @@ function removeMarkerClusters(markerCluster){
   markerCluster.resetViewport();
 }
 
+
 function resetMap(map){
   const sfCoords = {lat: 37.7749, lng: -122.4194};  
   map.setZoom(12);
   map.setCenter(sfCoords);
 }
+
 
 function filterIncidentData(incidentData, formFilters) {
   const noFilterSelected = "---";
@@ -354,7 +359,7 @@ function deleteAllMarkers(markerList) {
   // Set original markerList map to null. This is the only way to remove markers from Map
   putMarkersOnMap(markerList, null);
   
-  while (markerList.length > 0){
+  while (markerList.length > 0) {
     markerList.pop();
   }
 }
@@ -363,9 +368,25 @@ function deleteAllMarkers(markerList) {
 
 function createMarkerCluster(map, markerList){
   
-  return new MarkerClusterer(map,
+  const markerCluster = new MarkerClusterer(map,
         markerList, 
         {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
-        setMaxZoom: 9
+        setMaxZoom: 14
         });
+
+
+  console.log(markerCluster.getMarkers());
+
+  const minClusterZoom = 14;
+  google.maps.event.addListener(markerCluster, 'clusterclick', function(cluster) {
+    
+    console.log(cluster);
+    console.log(cluster.getMarkers());
+
+    map.fitBounds(cluster.getBounds()); // Fit the bounds of the cluster clicked on
+    if( map.getZoom() > minClusterZoom+1 ) // If zoomed in past 15 (first level without clustering), zoom out to 15
+      map.setZoom(minClusterZoom+1);
+  });
+
+  return markerCluster;
 }
