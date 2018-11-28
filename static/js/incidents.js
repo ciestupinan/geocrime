@@ -23,7 +23,6 @@ function startApp() {
     oms.addListener('format', function(marker, markersInSpider, status) {
       let iconURL;
 
-      console.log(markersInSpider.length);
       if (!markersInSpider.includes(marker)) {
         iconURL = getIcon(marker['incident']);
       } else if (status === OverlappingMarkerSpiderfier.markerStatus.SPIDERFIED) {
@@ -276,9 +275,6 @@ function setUpFormSubmitHandler(map, incidentData, markerList, markerCluster, om
 // function setUpFormSubmitHandler(map, incidentData, markerList, oms) {
   const filterForm = document.querySelector('#filterForm');
 
-
-
-
   filterForm.addEventListener('submit',function(evt){
     
     evt.preventDefault();
@@ -286,20 +282,24 @@ function setUpFormSubmitHandler(map, incidentData, markerList, markerCluster, om
     removeMarkerClusters(markerCluster);
     resetMap(map);
 
-
     const category = document.getElementById('category').value;
     const subcategory = document.getElementById('subcategory').value;
     const resolution = document.getElementById('resolution').value;
     const time = document.getElementById('time').value;
     const date = document.getElementById('date').value;
+    const mapCluster = document.getElementById('mapCluster').value;
 
     const formFilters = {'category':category,
         'subcategory':subcategory,
         'resolution':resolution,
         'time':time,
         'date':(date === "") ? '---' : date
-      };
+    };
 
+
+    /* 
+    *   Filter through incident data based on form values
+    */
     const filteredIncidentData = filterIncidentData(incidentData, formFilters);
     
     if (filteredIncidentData.length === 0){
@@ -307,10 +307,14 @@ function setUpFormSubmitHandler(map, incidentData, markerList, markerCluster, om
 
     } else {
       createMarkerList(map, filteredIncidentData, markerList, oms);
-      markerCluster = createMarkerCluster(map, markerList);
+      if (mapCluster === "on") {
+        markerCluster = createMarkerCluster(map, markerList);
+      }
       putMarkersOnMap(markerList, map);
     }
   });
+
+
 }
 
 
