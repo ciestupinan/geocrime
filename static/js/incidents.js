@@ -34,7 +34,7 @@ function startApp() {
 
       marker.setIcon({
         url: iconURL,
-        scaledSize: new google.maps.Size(20, 20)  // makes SVG icons work in IE
+        scaledSize: new google.maps.Size(18, 18)  // makes SVG icons work in IE
       });
     });
 
