@@ -12,44 +12,43 @@ function startApp() {
       markersWontMove: true,
       markersWontHide: true,
       basicFormatEvents: true,
+      legWeight: 2,
       keepSpiderfied: true
     });
 
-    oms.addListener('format', function(marker, status) {
-      marker.setIcon({
-        url: getIconURL(marker, status),
-        scaledSize: new google.maps.Size(15,15)
-      });
+    let markersInSpider = google.maps.event.addListenerOnce(map, 'idle', function(){
+      return oms.markersNearAnyOtherMarker();
     });
 
+    oms.addListener('format', function(marker, markersInSpider, status) {
+      let iconURL;
+
+      console.log(markersInSpider.length);
+      if (!markersInSpider.includes(marker)) {
+        iconURL = getIcon(marker['incident']);
+      } else if (status === OverlappingMarkerSpiderfier.markerStatus.SPIDERFIED) {
+        iconURL = getIcon(marker['incident']);
+      } else {
+        iconURL = 'static/js/marker-plus.svg';
+      }
+
+      marker.setIcon({
+        url: iconURL,
+        scaledSize: new google.maps.Size(20, 20)  // makes SVG icons work in IE
+      });
+    });
 
     const markerList = setInitialMarkers(map, incidentData, oms);
     const markerCluster = createMarkerCluster(map, markerList);
 
     setUpFormSubmitHandler(map, incidentData, markerList, markerCluster, oms);
 
-    
-
-    // setUpFormSubmitHandler(map, incidentData, markerList, oms);
-    /* can't return incidentData but it won't have the incidentData expected right away because 
-     * we're still waiting for AJAX request to finish
-     * */
-    
   });
 }
 
-function getIconURL(marker, status) {
-  if (status === OverlappingMarkerSpiderfier.markerStatus.SPIDERFIED) {
-    return getIcon(marker['incident'])
-  } else if (status === OverlappingMarkerSpiderfier.markerStatus.SPIDERFIABLE) {
-    return 'static/js/marker-plus.svg'
-  } else if (status === OverlappingMarkerSpiderfier.markerStatus.UNSPIDERFIABLE) {
-    return getIcon(marker['incident'])
-  } else {
-    return 'static/js/marker-plus.svg'
-  }
 
-}
+
+
 
 
 // Initialize map
@@ -162,6 +161,7 @@ function createMarkerList(map, incidentData, markerList, oms) {
     makeMarkerInfoWindow(incident, marker, map);
   }
 
+
   return markerList;
 }
 
@@ -171,12 +171,10 @@ function createMarkerObject(map, incident, oms) {
   
   const latitude = incident['latitude'];
   const longitude = incident['longitude'];
-  const icon = getIcon(incident);
 
   const marker = new google.maps.Marker({
     position: {lat: latitude, lng: longitude},
     title: `${latitude}, ${longitude}`,
-    icon: icon,
     incident: incident
   }); 
 
@@ -187,11 +185,28 @@ function createMarkerObject(map, incident, oms) {
     infowindow.open(map, marker);
   });
 
+  // google.maps.event.addListener(marker, 'spider_format', function(marker, status) {
+  //   console.log(status);
+  //   infowindow.setContent(makeMarkerInfoWindow(incident, marker, map));
+  //   infowindow.open(map, marker);
+
+  //   if (status === OverlappingMarkerSpiderfier.markerStatus.SPIDERFIED ||
+  //     status === OverlappingMarkerSpiderfier.markerStatus.UNSPIDERFIABLE) {
+
+  //     marker.setIcon(getIcon(marker['incident'])); 
+
+  //   } else {
+
+  //     marker.setIcon('static/js/marker-plus.svg');
+  //   }
+
+
+  // });
+
   oms.addMarker(marker);
 
   return marker;
 }
-
 
 function getIcon(incident){
 
@@ -206,6 +221,7 @@ function getIcon(incident){
     'Courtesy Report': 'static/images/blue.png',
     'Disorderly Conduct': 'static/images/blue_outline.png',
     'Drug Offense': 'static/images/brown.png',
+    'Drug Violation': 'static/images/brown.png',
     'Embezzlement': 'static/images/brown_outline.png',
     'Fire Report': 'static/images/darkgreen.png',
     'Forgery And Counterfeiting': 'static/images/darkgreen_outline.png',
@@ -260,12 +276,16 @@ function setUpFormSubmitHandler(map, incidentData, markerList, markerCluster, om
 // function setUpFormSubmitHandler(map, incidentData, markerList, oms) {
   const filterForm = document.querySelector('#filterForm');
 
+
+
+
   filterForm.addEventListener('submit',function(evt){
     
     evt.preventDefault();
     deleteAllMarkers(markerList);
     removeMarkerClusters(markerCluster);
     resetMap(map);
+
 
     const category = document.getElementById('category').value;
     const subcategory = document.getElementById('subcategory').value;
@@ -296,7 +316,6 @@ function setUpFormSubmitHandler(map, incidentData, markerList, markerCluster, om
 
 function removeMarkerClusters(markerCluster){
   markerCluster.clearMarkers();
-  markerCluster.resetViewport();
 }
 
 
@@ -370,19 +389,15 @@ function createMarkerCluster(map, markerList){
   
   const markerCluster = new MarkerClusterer(map,
         markerList, 
-        {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
-        setMaxZoom: 14
+        {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
         });
 
-
-  console.log(markerCluster.getMarkers());
-
   const minClusterZoom = 14;
+
+  markerCluster.setMaxZoom(minClusterZoom);
+  
   google.maps.event.addListener(markerCluster, 'clusterclick', function(cluster) {
     
-    console.log(cluster);
-    console.log(cluster.getMarkers());
-
     map.fitBounds(cluster.getBounds()); // Fit the bounds of the cluster clicked on
     if( map.getZoom() > minClusterZoom+1 ) // If zoomed in past 15 (first level without clustering), zoom out to 15
       map.setZoom(minClusterZoom+1);
