@@ -23,7 +23,6 @@ function startApp() {
     oms.addListener('format', function(marker, markersInSpider, status) {
       let iconURL;
 
-      console.log(markersInSpider.length);
       if (!markersInSpider.includes(marker)) {
         iconURL = getIcon(marker['incident']);
       } else if (status === OverlappingMarkerSpiderfier.markerStatus.SPIDERFIED) {
@@ -392,7 +391,7 @@ function createMarkerCluster(map, markerList){
         {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
         });
 
-  const minClusterZoom = 14;
+  const minClusterZoom = 15;
 
   markerCluster.setMaxZoom(minClusterZoom);
   
