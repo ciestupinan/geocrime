@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier/1.0.3/oms.min.js"></script>
+
+    <link rel="stylesheet" href="static/css/bootstrap.css">
+    <link rel="stylesheet" href="static/css/stylesheet.css">
+  </head>
+  
+  <body>
+        <div class="row">
+            <div class="col-8">
+               <div id="map"></div>
+           </div>
+           <div class="col-4">
+                <form name="filterForm" id="filterForm">
+
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input class="form-control" type="date" id="date">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="time">Time of Day</label>
+                        <select class="form-control" name="time" id="time">
+                            <option value="---">---</option>
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select class="form-control" name="category" id="category">
+                            <option value="---">---</option>
+                            <option value="Arson">Arson</option>
+                            <option value="Burglary">Burglary</option>
+                            <option value="Case Closure">Case Closure</option>
+                            <option value="Civil Sidewalks">Civil Sidewalks</option>
+                            <option value="Courtesy Report">Courtesy Report</option>
+
+                            <option value="Disorderly Conduct">Disorderly Conduct</option>
+                            <option value="Drug Offense">Drug Offense</option>
+                            <option value="Embezzlement">Embezzlement</option>
+                            <option value="Fire Report">Fire Report</option>
+                            <option value="Forgery And Counterfeiting">Forgery And Counterfeiting</option>
+                            
+                            <option value="Fraud">Fraud</option>
+                            <option value="Larceny Theft">Larceny Theft</option>
+                            <option value="Lost Property">Lost Property</option>
+                            <option value="Malicious Mischief">Malicious Mischief</option>
+                            <option value="Motor Vehicle Theft">Motor Vehicle Theft</option>
+                            
+                            <option value="Miscellaneous Investigation">Miscellaneous Investigation</option>
+                            <option value="Offences Against The Family And Children">Offences Against The Family And Children</option>
+                            <option value="Other">Other</option>
+                            <option value="Other Offenses">Other Offenses</option>
+                            <option value="Prostitution">Prostitution</option>
+                            <option value="Rape">Rape</option>
+                            
+                            <option value="Recovered Vehicle">Recovered Vehicle</option>
+                            <option value="Robbery">Robbery</option>
+                            <option value="Sex Offense">Sex Offense</option>
+                            <option value="Stolen Property">Stolen Property</option>
+                            <option value="Suspicious Occ">Suspicious Occ</option>
+                            
+                            <option value="Traffic Collision">Traffic Collision</option>
+                            <option value="Traffic Violation Arrest">Traffic Violation Arrest</option>
+                            <option value="Vandalism">Vandalism</option>
+                            <option value="Warrant">Warrant</option>
+                            <option value="Weapons Offense">Weapons Offense</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subcategory">Subcategory</label>
+                        <select class="form-control" name="subcategory" id="subcategory">
+                            <option value="---">---</option>
+                            <option value="Aggravated Assault">Aggravated Assault</option>
+                            <option value="Arson">Arson</option>
+                            <option value="Burglary - Commercial">Burglary - Commercial</option>
+                            <option value="Burglary - Hot Prowl">Burglary - Hot Prowl</option>
+                            <option value="Burglary - Other">Burglary - Other</option>
+                            
+                            <option value="Burglary - Residential">Burglary - Residential</option>
+                            <option value="Case Closure">Case Closure</option>
+                            <option value="Child Abuse">Child Abuse</option>
+                            <option value="Courtesy Report">Courtesy Report</option>
+                            <option value="Disorderly Conduct">Disorderly Conduct</option>
+                            
+                            <option value="Drug Violation">Drug Violation</option>
+                            <option value="Embezzlement">Embezzlement</option>
+                            <option value="Extortion-Blackmail">Extortion-Blackmail</option>
+                            <option value="Family Offenses">Family Offenses</option>
+                            <option value="Fire Report">Fire Report</option>
+                            
+                            <option value="Forgery And Counterfeiting">Forgery And Counterfeiting</option>
+                            <option value="Fraud">Fraud</option>
+                            <option value="Intimidation">Intimidation</option>
+                            <option value="Larceny - From Vehicle">Larceny - From Vehicle</option>
+                            <option value="Larceny Theft - Bicycle">Larceny Theft - Bicycle</option>
+                            
+                            <option value="Larceny Theft - From Building">Larceny Theft - From Building</option>
+                            <option value="Larceny Theft - Other">Larceny Theft - Other</option>
+                            <option value="Larceny Theft - Pickpocket">Larceny Theft - Pickpocket</option>
+                            <option value="Larceny Theft - Shoplifting">Larceny Theft - Shoplifting</option>
+                            <option value="Liquor Law Violation">Liquor Law Violation</option>
+                            
+                            <option value="Lost Property">Lost Property</option>
+                            <option value="Miscellaneous Investigation">Miscellaneous Investigation</option>
+                            <option value="Missing Adult">Missing Adult</option>
+                            <option value="Missing Juvenile">Missing Juvenile</option>
+                            <option value="Missing Person">Missing Person</option>
+                            
+                            <option value="Motor Vehicle Theft">Motor Vehicle Theft</option>
+                            <option value="Motor Vehicle Theft (Attempted)">Motor Vehicle Theft (Attempted)</option>
+                            <option value="Non-Criminal">Non-Criminal</option>
+                            <option value="Other">Other</option>
+                            <option value="Other Offenses">Other Offenses</option>
+                            <option value="Prostitution">Prostitution</option>
+                            
+                            <option value="Rape">Rape</option>
+                            <option value="Recovered Vehicle">Recovered Vehicle</option>
+                            <option value="Robbery - Commercial">Robbery - Commercial</option>
+                            <option value="Robbery - Other">Robbery - Other</option>
+                            <option value="Sex Offense">Sex Offense</option>
+                            
+                            <option value="Simple Assault">Simple Assault</option>
+                            <option value="Stalking">Stalking</option>
+                            <option value="Stolen Property">Stolen Property</option>
+                            <option value="Suspicious Occ">Suspicious Occ</option>
+                            <option value="Traffic Collision">Traffic Collision</option>
+                            
+                            <option value="Traffic Violation Arrest">Traffic Violation Arrest</option>
+                            <option value="Trespass">Trespass</option>
+                            <option value="Theft From Vehicle">Theft From Vehicle</option>
+                            <option value="Vandalism">Vandalism</option>
+                            <option value="Warrant">Warrant</option>
+                            <option value="Weapons Offense">Weapons Offense</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="resolution">Resolution</label>
+                        <select class="form-control" name="resolution" id="resolution">
+                            <option value="---">---</option>
+                            <option value="Cite or Arrest Adult">Cite or Arrest Adult</option>
+                            <option value="Cite or Arrest Juvenile">Cite or Arrest Juvenile</option>
+                            <option value="Exceptional Adult">Exceptional Adult</option>
+                            <option value="Open or Active">Open or Active</option>
+                            <option value="Unfounded">Unfounded</option>
+                        </select>
+                    </div>
+
+                    <input type="submit">
+                </form>
+            </div>
+        </div>
+                      
+             
+
+    
+    <script src="static/js/incidents.js"></script>
+    <script src="static/js/markerclusterer.js"></script>
+    <script
+    src="https://maps.googleapis.com/maps/api/js?key={{ key }}&libraries=visualization&callback=startApp" async defer>
+    </script>
+  </body>
+</html>
