@@ -36,68 +36,321 @@
                         </div>
 
                         <div class="form-group">
-                            <input type="checkbox" name="Arson" value="Arson"> Arson<br>
-                            <input type="checkbox" name="Assault" value="Assault"> Assault<br>
-                            <input type="checkbox" name="Burglary" value="Burglary"> Burglary<br>
-                            <input type="checkbox" name="Case Closure" value="Case Closure"> Case Closure<br>
-                            <input type="checkbox" name="Civil Sidewalks" value="Civil Sidewalks"> Civil Sidewalks<br>
 
-                            <!-- <select class="form-control" name="category" id="category">
-                                <option value="---">---</option>
-                                <option value="Arson" data-image="static/images/aqua.png">Arson</option>
-                                <option value="Assault">Assault</option>
-                                <option value="Burglary">Burglary</option>
-                                <option value="Case Closure">Case Closure</option>
-                                <option value="Civil Sidewalks">Civil Sidewalks</option>
-                                <option value="Courtesy Report">Courtesy Report</option>
+                            <label for="category">Category</label>
+                            <div id="category-div">
+                                <!--
+                                ---- Category Filtering 
+                                --->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="category" value="No Category Filter" checked>
+                                  <label class="form-check-label" for="noCategoryFilter">
+                                    No Category Filter
+                                  </label>
+                                </div>
+                                <!-- Arson -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="category" value="Arson">
+                                  <label class="form-check-label" for="Arson">
+                                    Arson <span data-toggle="tooltip" data-placement="right" title="Arson: The criminal act of deliberately setting fire to property."><img class="category-code" src="static/images/aqua.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Assault -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="category" value="Assault">
+                                  <label class="form-check-label" for="Assault">
+                                    Assault <span data-toggle="tooltip" data-placement="right" title="Assault: ***"><img class="category-code" src="static/images/aqua_black_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Burglary -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="category" value="Burglary">
+                                  <label class="form-check-label" for="Burglary">
+                                    Burglary <span data-toggle="tooltip" data-placement="right" title="Burglary: ***"> <img class="category-code" src="static/images/aqua_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Case Closure -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="category" value="Case Closure">
+                                  <label class="form-check-label" for="CaseClosure">
+                                    Case Closure <span data-toggle="tooltip" data-placement="right" title="Case Closure: ***"><img class="category-code" src="static/images/black.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Civil Sidewalks -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="CivilSidewalks" value="Civil Sidewalks">
+                                  <label class="form-check-label" for="CivilSidewalks">
+                                    Civil Sidewalks <span data-toggle="tooltip" data-placement="right" title="Civil Sidewalks: ***"><img class="category-code" src="static/images/black_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Courtesy Report -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="CourtesyReport" value="Courtesy Report">
+                                  <label class="form-check-label" for="CourtesyReport">
+                                    Courtesy Report <span data-toggle="tooltip" data-placement="right" title="Courtesy Report: ***"><img class="category-code" src="static/images/blue.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Disorderly Conduct -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="DisorderlyConduct" value="Disorderly Conduct">
+                                  <label class="form-check-label" for="DisorderlyConduct">
+                                    Disorderly Conduct <span data-toggle="tooltip" data-placement="right" title="Disorderly Conduct: ***"><img class="category-code" src="static/images/blue_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Drug Offenset -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="DrugOffense" value="Drug Offense">
+                                  <label class="form-check-label" for="DrugOffense">
+                                    Drug Offense <span data-toggle="tooltip" data-placement="right" title="Drug Offense: ***"><img class="category-code" src="static/images/brown.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Drug Violation -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="DrugViolation" value="Drug Violation">
+                                  <label class="form-check-label" for="DrugViolation">
+                                    Drug Violation <span data-toggle="tooltip" data-placement="right" title="Drug Violation: ***"><img class="category-code" src="static/images/brown.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Embezzlement -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="Embezzlement" value="Embezzlement">
+                                  <label class="form-check-label" for="Embezzlement">
+                                    Embezzlement <span data-toggle="tooltip" data-placement="right" title="Embezzlement: ***"><img class="category-code" src="static/images/brown_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Family Offense -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="FamilyOffense" value="Family Offense">
+                                  <label class="form-check-label" for="FamilyOffense">
+                                    Family Offense <span data-toggle="tooltip" data-placement="right" title="Family Offense: ***"><img class="category-code" src="static/images/brown_black_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Fire Report -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="FireReport" value="Fire Report">
+                                  <label class="form-check-label" for="FireReport">
+                                    Fire Report <span data-toggle="tooltip" data-placement="right" title="Fire Report: ***"><img class="category-code" src="static/images/darkgreen.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Forgery And Counterfeiting -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="ForgeryAndCounterfeiting" value="Forgery And Counterfeiting">
+                                  <label class="form-check-label" for="ForgeryAndCounterfeiting">
+                                    Forgery And Counterfeiting <span data-toggle="tooltip" data-placement="right" title="Forgery And Counterfeiting: ***"><img class="category-code" src="static/images/darkgreen_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Fraud -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="Fraud" value="Fraud">
+                                  <label class="form-check-label" for="Fraud">
+                                    Fraud <span data-toggle="tooltip" data-placement="right" title="Fraud: ***"><img class="category-code" src="static/images/fuscia.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Homicide -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="Homicide" value="Homicide">
+                                  <label class="form-check-label" for="Homicide">
+                                    Homicide <span data-toggle="tooltip" data-placement="right" title="Homicide: ***"><img class="category-code" src="static/images/fuscia_black_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Human Trafficking (A), Commercial Sex Acts -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="HumanTraffickingA" value="Human Trafficking (A), Commercial Sex Acts">
+                                  <label class="form-check-label" for="HumanTraffickingA">
+                                    Human Trafficking (A), Commercial Sex Acts <span data-toggle="tooltip" data-placement="right" title="Human Trafficking (A), Commercial Sex Acts: ***"><img class="category-code" src="static/images/fuscia_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Larceny Theft -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="LarcenyTheft" value="Larceny Theft">
+                                  <label class="form-check-label" for="LarcenyTheft">
+                                    Larceny Theft <span data-toggle="tooltip" data-placement="right" title="Larceny Theft: ***"><img class="category-code" src="static/images/grey_black_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Lost Property -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="LostProperty" value="Lost Property">
+                                  <label class="form-check-label" for="LostProperty">
+                                    Lost Property <span data-toggle="tooltip" data-placement="right" title="Lost Property: ***"><img class="category-code" src="static/images/lightblue_black_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Malicious Mischief -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="MaliciousMischief" value="Malicious Mischief">
+                                  <label class="form-check-label" for="MaliciousMischief">
+                                    Malicious Mischief <span data-toggle="tooltip" data-placement="right" title="Malicious Mischief: ***"><img class="category-code" src="static/images/green.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Miscellaneous Investigation -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="MiscellaneousInvestigation" value="Miscellaneous Investigation">
+                                  <label class="form-check-label" for="MiscellaneousInvestigation">
+                                    Miscellaneous Investigation <span data-toggle="tooltip" data-placement="right" title="Miscellaneous Investigation: ***"><img class="category-code" src="static/images/green_black_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Missing Person -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="MissingPerson" value="Missing Person">
+                                  <label class="form-check-label" for="MissingPerson">
+                                    Missing Person <span data-toggle="tooltip" data-placement="right" title="Missing Person: ***"><img class="category-code" src="static/images/green_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Motor Vehicle Theft -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="MotorVehicleTheft" value="Motor Vehicle Theft">
+                                  <label class="form-check-label" for="MotorVehicleTheft">
+                                    Motor Vehicle Theft <span data-toggle="tooltip" data-placement="right" title="Motor Vehicle Theft: ***"><img class="category-code" src="static/images/grey.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Non-Criminal -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="Non-Criminal" value="Non-Criminal">
+                                  <label class="form-check-label" for="MotorVehicleTheft">
+                                    Non-Criminal <span data-toggle="tooltip" data-placement="right" title="Non-Criminal: ***"><img class="category-code" src="static/images/grey_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Offences Against The Family And Children -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="OffencesAgainstTheFamilyAndChildren" value="Offences Against The Family And Children">
+                                  <label class="form-check-label" for="OffencesAgainstTheFamilyAndChildren">
+                                    Offences Against The Family And Children <span data-toggle="tooltip" data-placement="right" title="Offences Against The Family And Children: ***"><img class="category-code" src="static/images/lightblue.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Other -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="Other" value="Other">
+                                  <label class="form-check-label" for="Other">
+                                    Other <span data-toggle="tooltip" data-placement="right" title="Other: ***"><img class="category-code" src="static/images/lightblue_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Other Miscellaneous -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="OtherMiscellaneous" value="Other Miscellaneous">
+                                  <label class="form-check-label" for="OtherMiscellaneous">
+                                    Other Miscellaneous <span data-toggle="tooltip" data-placement="right" title="Other Miscellaneous: ***"><img class="category-code" src="static/images/lightgreen_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Other Offenses -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="OtherOffenses" value="Other Offenses">
+                                  <label class="form-check-label" for="OtherOffenses">
+                                    Other Offenses <span data-toggle="tooltip" data-placement="right" title="Other Offenses: ***"><img class="category-code" src="static/images/lightgreen.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Prostitution -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="Prostitution" value="Prostitution">
+                                  <label class="form-check-label" for="Prostitution">
+                                    Prostitution <span data-toggle="tooltip" data-placement="right" title="Prostitution: ***"><img class="category-code" src="static/images/orange_black_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Rape -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="Rape" value="Rape">
+                                  <label class="form-check-label" for="Rape">
+                                    Rape <span data-toggle="tooltip" data-placement="right" title="Rape: ***"><img class="category-code" src="static/images/orange.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Recovered Vehicle -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="RecoveredVehicle" value="Recovered Vehicle">
+                                  <label class="form-check-label" for="RecoveredVehicle">
+                                    Recovered Vehicle <span data-toggle="tooltip" data-placement="right" title="Recovered Vehicle: ***"><img class="category-code" src="static/images/orange_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Robbery -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="Robbery" value="Robbery">
+                                  <label class="form-check-label" for="Robbery">
+                                    Robbery <span data-toggle="tooltip" data-placement="right" title="Robbery: ***"><img class="category-code" src="static/images/pink.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Sex Offense -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="SexOffense" value="Sex Offense">
+                                  <label class="form-check-label" for="SexOffense">
+                                    Sex Offense <span data-toggle="tooltip" data-placement="right" title="Sex Offense: ***"><img class="category-code" src="static/images/pink_black_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Stolen Property -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="StolenProperty" value="Stolen Property">
+                                  <label class="form-check-label" for="StolenProperty">
+                                    Stolen Property <span data-toggle="tooltip" data-placement="right" title="Stolen Property: ***"><img class="category-code" src="static/images/pink_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Suicide -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="Suicide" value="Suicide">
+                                  <label class="form-check-label" for="Suicide">
+                                    Suicide <span data-toggle="tooltip" data-placement="right" title="Suicide: ***"><img class="category-code" src="static/images/red_black_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Suspicious Occ -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="SuspiciousOcc" value="Suspicious Occ">
+                                  <label class="form-check-label" for="SuspiciousOcc">
+                                    Suspicious Occ <span data-toggle="tooltip" data-placement="right" title="Suspicious Occ: ***"><img class="category-code" src="static/images/purple.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Traffic Collision -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="TrafficCollision" value="Traffic Collision">
+                                  <label class="form-check-label" for="TrafficCollision">
+                                    Traffic Collision <span data-toggle="tooltip" data-placement="right" title="Traffic Collision: ***"><img class="category-code" src="static/images/purple_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Traffic Violation Arrest -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="TrafficViolationArrest" value="Traffic Violation Arrest">
+                                  <label class="form-check-label" for="TrafficViolationArrest">
+                                    Traffic Violation Arrest <span data-toggle="tooltip" data-placement="right" title="Traffic Violation Arrest: ***"><img class="category-code" src="static/images/red.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Vandalism -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="Vandalism" value="Vandalism">
+                                  <label class="form-check-label" for="Vandalism">
+                                    Vandalism <span data-toggle="tooltip" data-placement="right" title="Vandalism: ***"><img class="category-code" src="static/images/red_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Vehicle Impounded -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="VehicleImpounded" value="Vehicle Impounded">
+                                  <label class="form-check-label" for="VehicleImpounded">
+                                    Vehicle Impounded <span data-toggle="tooltip" data-placement="right" title="Vehicle Impounded: ***"><img class="category-code" src="static/images/darkgreen_black_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Vehicle Misplaced -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="VehicleMisplaced" value="Vehicle Misplaced">
+                                  <label class="form-check-label" for="VehicleMisplaced">
+                                    Vehicle Misplaced <span data-toggle="tooltip" data-placement="right" title="Vehicle Misplaced: ***"><img class="category-code" src="static/images/blue_black_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Warrant -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="Warrant" value="Warrant">
+                                  <label class="form-check-label" for="Warrant">
+                                    Warrant <span data-toggle="tooltip" data-placement="right" title="Warrant: ***"><img class="category-code" src="static/images/yellow.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Weapons Carrying Etc -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="WeaponsCarryingEtc" value="Weapons Carrying Etc">
+                                  <label class="form-check-label" for="WeaponsCarryingEtc">
+                                    Weapons Carrying Etc <span data-toggle="tooltip" data-placement="right" title="Weapons Carrying Etc: ***"><img class="category-code" src="static/images/yellow_black_outline.png"></span>
+                                  </label>
+                                </div>
+                                <!-- Weapons Offense -->
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="category" id="WeaponsOffense" value="Weapons Offense">
+                                  <label class="form-check-label" for="WeaponsOffense">
+                                    Weapons Offense <span data-toggle="tooltip" data-placement="right" title="Weapons Offense: ***"><img class="category-code" src="static/images/yellow_outline.png"></span>
+                                  </label>
+                                </div>
 
-                                <option value="Disorderly Conduct">Disorderly Conduct</option>
-                                <option value="Drug Offense">Drug Offense</option>
-                                <option value="Drug Violation">Drug Violation</option>
-                                <option value="Embezzlement">Embezzlement</option>
-                                <option value="Family Offense">Family Offense</option>
-                                <option value="Fire Report">Fire Report</option>
-                                <option value="Forgery And Counterfeiting">Forgery And Counterfeiting</option>
-                                
-                                <option value="Fraud">Fraud</option>
-                                <option value="Homicide">Homicide</option>
-                                
-                                <option value="Human Trafficking (A), Commercial Sex Acts">Human Trafficking (A), Commercial Sex Acts</option>
-
-
-
-                                <option value="Larceny Theft">Larceny Theft</option>
-                                <option value="Lost Property">Lost Property</option>
-                                <option value="Malicious Mischief">Malicious Mischief</option>
-                                <option value="Miscellaneous Investigation">Miscellaneous Investigation</option>
-                                <option value="Missing Person">Missing Person</option>
-                                
-                                
-                                <option value="Motor Vehicle Theft">Motor Vehicle Theft</option>
-                                <option value="Non-Criminal">Non-Criminal</option>
-                                <option value="Offences Against The Family And Children">Offences Against The Family And Children</option>
-                                <option value="Other">Other</option>
-                                <option value="Other Miscellaneous">Other Miscellaneous</option>
-                                <option value="Other Offenses">Other Offenses</option>
-                                <option value="Prostitution">Prostitution</option>
-                                <option value="Rape">Rape</option>
-                                
-                                <option value="Recovered Vehicle">Recovered Vehicle</option>
-                                <option value="Robbery">Robbery</option>
-                                <option value="Sex Offense">Sex Offense</option>
-                                <option value="Stolen Property">Stolen Property</option>
-                                <option value="Suicide">Suicide</option>
-                                <option value="Suspicious Occ">Suspicious Occ</option>
-                                
-                                <option value="Traffic Collision">Traffic Collision</option>
-                                <option value="Traffic Violation Arrest">Traffic Violation Arrest</option>
-                                <option value="Vandalism">Vandalism</option>
-                                <option value="Vehicle Impounded">Vehicle Impounded</option>
-                                <option value="Vehicle Misplaced">Vehicle Misplaced</option>
-                                <option value="Warrant">Warrant</option>
-                                <option value="Weapons Carrying Etc">Weapons Carrying Etc</option>
-                                <option value="Weapons Offense">Weapons Offense</option>
-                            </select> -->
+                            </div>
                         </div>
 
                         <div class="form-group">

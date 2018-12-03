@@ -13,3 +13,14 @@
 	padding-left:30px;
 	padding-right:70px;
 }
+
+#category-div {
+	padding-left: 3px;
+	height: 180px;
+	overflow: scroll;
+}
+
+.category-code {
+	height:12px;
+	width: 12px;
+}
