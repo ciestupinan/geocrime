@@ -295,13 +295,13 @@ function setUpFormSubmitHandler(map, incidentData, markerList, markerCluster, om
 
     // const category = document.getElementById('category').value;
     const category = document.querySelector('input[name="category"]:checked').value;
-    const subcategory = document.getElementById('subcategory').value;
+    // const subcategory = document.getElementById('subcategory').value;
     const resolution = document.getElementById('resolution').value;
     const time = document.getElementById('time').value;
     const date = document.getElementById('date').value;
 
     const formFilters = {'category':(category === "No Category Filter") ? '---' : category,
-        'subcategory':subcategory,
+        // 'subcategory':subcategory,
         'resolution':resolution,
         'time':time,
         'date':(date === "") ? '---' : date
