@@ -55,12 +55,13 @@ function initMap() {
   const sfCoords = {lat: 37.7749, lng: -122.4194};  
 
   // Create map
-  return new google.maps.Map(document.getElementById('map'), {
+  var map =  new google.maps.Map(document.getElementById('map'), {
     center: sfCoords,
     zoom: 12
   });
-}
 
+  return map
+}
 
 
 function getIncidentData(callback) {
@@ -283,7 +284,7 @@ function setUpFormSubmitHandler(map, incidentData, markerList, markerCluster, om
     evt.preventDefault();
     deleteAllMarkers(markerList);
     removeMarkerClusters(markerCluster);
-    resetMap(map);
+    // resetMap(map);
 
 
     const category = document.getElementById('category').value;
