@@ -38,6 +38,7 @@
                             <select class="form-control" name="category" id="category">
                                 <option value="---">---</option>
                                 <option value="Arson">Arson</option>
+                                <option value="Assault">Assault</option>
                                 <option value="Burglary">Burglary</option>
                                 <option value="Case Closure">Case Closure</option>
                                 <option value="Civil Sidewalks">Civil Sidewalks</option>
@@ -45,19 +46,31 @@
 
                                 <option value="Disorderly Conduct">Disorderly Conduct</option>
                                 <option value="Drug Offense">Drug Offense</option>
+                                <option value="Drug Violation">Drug Violation</option>
                                 <option value="Embezzlement">Embezzlement</option>
+                                <option value="Family Offense">Family Offense</option>
                                 <option value="Fire Report">Fire Report</option>
                                 <option value="Forgery And Counterfeiting">Forgery And Counterfeiting</option>
                                 
                                 <option value="Fraud">Fraud</option>
+                                <option value="Homicide">Homicide</option>
+                                
+                                <option value="Human Trafficking (A), Commercial Sex Acts">Human Trafficking (A), Commercial Sex Acts</option>
+
+
+
                                 <option value="Larceny Theft">Larceny Theft</option>
                                 <option value="Lost Property">Lost Property</option>
                                 <option value="Malicious Mischief">Malicious Mischief</option>
-                                <option value="Motor Vehicle Theft">Motor Vehicle Theft</option>
-                                
                                 <option value="Miscellaneous Investigation">Miscellaneous Investigation</option>
+                                <option value="Missing Person">Missing Person</option>
+                                
+                                
+                                <option value="Motor Vehicle Theft">Motor Vehicle Theft</option>
+                                <option value="Non-Criminal">Non-Criminal</option>
                                 <option value="Offences Against The Family And Children">Offences Against The Family And Children</option>
                                 <option value="Other">Other</option>
+                                <option value="Other Miscellaneous">Other Miscellaneous</option>
                                 <option value="Other Offenses">Other Offenses</option>
                                 <option value="Prostitution">Prostitution</option>
                                 <option value="Rape">Rape</option>
@@ -66,12 +79,16 @@
                                 <option value="Robbery">Robbery</option>
                                 <option value="Sex Offense">Sex Offense</option>
                                 <option value="Stolen Property">Stolen Property</option>
+                                <option value="Suicide">Suicide</option>
                                 <option value="Suspicious Occ">Suspicious Occ</option>
                                 
                                 <option value="Traffic Collision">Traffic Collision</option>
                                 <option value="Traffic Violation Arrest">Traffic Violation Arrest</option>
                                 <option value="Vandalism">Vandalism</option>
+                                <option value="Vehicle Impounded">Vehicle Impounded</option>
+                                <option value="Vehicle Misplaced">Vehicle Misplaced</option>
                                 <option value="Warrant">Warrant</option>
+                                <option value="Weapons Carrying Etc">Weapons Carrying Etc</option>
                                 <option value="Weapons Offense">Weapons Offense</option>
                             </select>
                         </div>
@@ -156,30 +173,12 @@
                             </select>
                         </div>
 
-                        <div class="form-group">
-                            <label for="mapCluster">Map Clustering</label>
-                            <select class="form-control" name="mapCluster" id="mapCluster">
-                                <option value="mapClusterOn">On</option>
-                                <option value="mapClusterOff">Off</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="Heatmap">Heatmap</label>
-                            <select class="form-control" name="Heatmap" id="Heatmap">
-                                <option value="HeatmapOff">Off</option>
-                                <option value="HeatmapOn">On</option>
-                            </select>
-                        </div>
-
                         <input type="submit">
                     </form>
                 </div>
             </div>
-                      
-             
 
-    
+
     <script src="static/js/incidents.js"></script>
     <script src="static/js/markerclusterer.js"></script>
     <script
