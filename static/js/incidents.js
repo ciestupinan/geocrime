@@ -184,24 +184,6 @@ function createMarkerObject(map, incident, oms) {
     infowindow.open(map, marker);
   });
 
-  // google.maps.event.addListener(marker, 'spider_format', function(marker, status) {
-  //   console.log(status);
-  //   infowindow.setContent(makeMarkerInfoWindow(incident, marker, map));
-  //   infowindow.open(map, marker);
-
-  //   if (status === OverlappingMarkerSpiderfier.markerStatus.SPIDERFIED ||
-  //     status === OverlappingMarkerSpiderfier.markerStatus.UNSPIDERFIABLE) {
-
-  //     marker.setIcon(getIcon(marker['incident'])); 
-
-  //   } else {
-
-  //     marker.setIcon('static/js/marker-plus.svg');
-  //   }
-
-
-  // });
-
   oms.addMarker(marker);
 
   return marker;
@@ -261,18 +243,16 @@ function getIcon(incident){
 }
 
 function makeMarkerInfoWindow(incident, marker, map){
+
   const contentString = `<div id="content">
       <div id="siteNotice"></div>
-      <p id="firstHeading" class="firstHeading">
-      <b>Crimes at (${incident['latitude']},${incident['longitude']})</b></p>
+      <h5 id="firstHeading" class="firstHeading">${incident['category']}</h5>
       <div id="bodyContent">
-      <p>date: ${incident['date']}
-      <br>time: ${incident['time']}
-      <br>category: ${incident['category']}
-      <br>subcategory: ${incident['subcategory']}
-      <br>description: ${incident['description']}
-      <br>resolution: ${incident['resolution']}</p><hr>
-      </div></div>`;
+      <p>Incident occured on <b>${incident['date']}</b> at <b>${incident['time']}</b>.
+      <br>Description: ${incident['description']}
+      <br>Resolution at time of report: ${incident['resolution']}</p>
+      </div>
+      </div>`;
 
   return contentString
 }
