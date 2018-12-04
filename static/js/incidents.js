@@ -52,12 +52,12 @@ function startApp() {
 
 // Initialize map
 function initMap() {
-  const sfCoords = {lat: 37.7749, lng: -122.4194};  
+  const sfCoords = {lat: 37.77, lng: -122.436};  
 
   // Create map
   return new google.maps.Map(document.getElementById('map'), {
     center: sfCoords,
-    zoom: 12
+    zoom: 11
   });
 }
 
@@ -182,6 +182,7 @@ function createMarkerObject(map, incident, oms) {
   google.maps.event.addListener(marker, 'spider_click', function(e) {
     infowindow.setContent(makeMarkerInfoWindow(incident, marker, map));
     infowindow.open(map, marker);
+    infowindow.close();
   });
 
   oms.addMarker(marker);
@@ -307,8 +308,8 @@ function removeMarkerClusters(markerCluster){
 
 
 function resetMap(map){
-  const sfCoords = {lat: 37.7749, lng: -122.4194};  
-  map.setZoom(12);
+  const sfCoords = {lat: 37.77, lng: -122.436};  
+  map.setZoom(11);
   map.setCenter(sfCoords);
 }
 
@@ -379,7 +380,7 @@ function createMarkerCluster(map, markerList){
         {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
         });
 
-  const minClusterZoom = 15;
+  const minClusterZoom = 14;
 
   markerCluster.setMaxZoom(minClusterZoom);
   
