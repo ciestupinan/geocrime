@@ -70,7 +70,7 @@ function getIncidentData(callback) {
     url: "https://data.sfgov.org/resource/nwbb-fxkq.json",
     type: "GET",
     data: {
-      "$limit" : 5000,
+      "$limit" : 8000,
       "$$app_token" : "Y6mTFPFpnPQzYXxLv0LVidpom"
     }
 
@@ -182,7 +182,6 @@ function createMarkerObject(map, incident, oms) {
   google.maps.event.addListener(marker, 'spider_click', function(e) {
     infowindow.setContent(makeMarkerInfoWindow(incident, marker, map));
     infowindow.open(map, marker);
-    infowindow.close();
   });
 
   oms.addMarker(marker);
@@ -245,13 +244,32 @@ function getIcon(incident){
 
 function makeMarkerInfoWindow(incident, marker, map){
 
+  // 2018-09-29
+  let date = (incident['date']).split('-');
+  let months = {
+    '01':'January',
+    '02':'February',
+    '03':'March',
+    '04':'April',
+    '05':'May',
+    '06':'June',
+    '07':'July',
+    '08':'August',
+    '09':'September',
+    '10':'October',
+    '11':'November',
+    '12':'December'
+  };
+
+
+
   const contentString = `<div id="content">
       <div id="siteNotice"></div>
-      <h5 id="firstHeading" class="firstHeading">${incident['category']}</h5>
+      <h6 id="firstHeading" class="firstHeading">${incident['category']} on ${months[date[1]]} ${date[2]}, ${date[0]} at ${incident['time']}</h6>
       <div id="bodyContent">
-      <p>Incident occured on <b>${incident['date']}</b> at <b>${incident['time']}</b>.
-      <br>Description: ${incident['description']}
-      <br>Resolution at time of report: ${incident['resolution']}</p>
+      <ul><li>Description: ${incident['description']}</li>
+      <li>Resolution: ${incident['resolution']}</li>
+      </ul>
       </div>
       </div>`;
 
@@ -271,7 +289,7 @@ function setUpFormSubmitHandler(map, incidentData, markerList, markerCluster, om
     evt.preventDefault();
     deleteAllMarkers(markerList);
     removeMarkerClusters(markerCluster);
-    resetMap(map);
+    // setTimeout(resetMap(map),20);
 
 
     // const category = document.getElementById('category').value;
@@ -292,6 +310,7 @@ function setUpFormSubmitHandler(map, incidentData, markerList, markerCluster, om
     
     if (filteredIncidentData.length === 0){
       alert("There aren't any incidents that meet that criteria!");
+      resetMap(map);
 
     } else {
       createMarkerList(map, filteredIncidentData, markerList, oms);
