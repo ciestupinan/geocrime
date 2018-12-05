@@ -6,10 +6,22 @@ This project was worked on as part of the [Hackbright Academy's Full-Time Softwa
 
 #### Tech Stack
 Python, JavaScript, HTML, CSS
+Google Maps API, Overlapping Marker Spiderfier Library, DataSF, Bootstrap
 
-## Visualizations
+## Features
 
-TBD
+### Filtering
+
+(http://www.giphy.com/gifs/5ZYvQjtsJZAY0bV6u1)
+######using all filters to show change in markers
+
+include color coding
+and dynamic filitering
+
+### MarkerClustering
+
+### Spiderfying
+
 
 ## Resources Used
 
