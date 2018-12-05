@@ -12,8 +12,8 @@ Google Maps API, Overlapping Marker Spiderfier Library, DataSF, Bootstrap
 
 ### Filtering
 
-(http://www.giphy.com/gifs/5ZYvQjtsJZAY0bV6u1)
-######using all filters to show change in markers
+![](http://www.giphy.com/gifs/5ZYvQjtsJZAY0bV6u1)
+###### using all filters to show change in markers
 
 include color coding
 and dynamic filitering
