@@ -6,17 +6,18 @@ This project was worked on as part of the [Hackbright Academy's Full-Time Softwa
 
 #### Tech Stack
 Python, JavaScript, HTML, CSS
+
 Google Maps API, Overlapping Marker Spiderfier Library, DataSF, Bootstrap
 
 ## Features
 
 ### Filtering
 
-![](http://www.giphy.com/gifs/5ZYvQjtsJZAY0bV6u1)
-###### using all filters to show change in markers
+After getting the data from DataSF via AJAX, I had to extract the relevant data needed for this project. I saved the relevant data as an object to use it throughout my program. This also allowed my app to filter dynamically, rather than call AJAX each time the filters changed. 
 
-include color coding
-and dynamic filitering
+![using all filters to show change in markers](https://media.giphy.com/media/5ZYvQjtsJZAY0bV6u1/giphy.gif)
+
+Each category has a circle associated with it as either a solid color or a color with border. 
 
 ### MarkerClustering
 
