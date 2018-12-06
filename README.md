@@ -11,6 +11,9 @@ Google Maps API, Overlapping Marker Spiderfier Library, DataSF, Bootstrap
 
 ## Features
 
+### Marker Clustering
+![marker cluster zoom](https://media.giphy.com/media/XJpK6gaONtlpZLx0pa/giphy.gif)
+
 ### Filtering
 
 After getting the data from DataSF via AJAX, I had to extract the relevant data needed for this project. I saved the relevant data as an object to use it throughout my program. This also allowed my app to filter dynamically, rather than call AJAX each time the filters changed. 
@@ -18,8 +21,6 @@ After getting the data from DataSF via AJAX, I had to extract the relevant data 
 ![using all filters to show change in markers](https://media.giphy.com/media/5ZYvQjtsJZAY0bV6u1/giphy.gif)
 
 Each category has a circle associated with it as either a solid color or a color with border. 
-
-### MarkerClustering
 
 ### Spiderfying
 
