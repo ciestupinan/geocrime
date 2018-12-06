@@ -12,7 +12,7 @@ Google Maps API, Overlapping Marker Spiderfier Library, DataSF, Bootstrap
 ## Features
 
 ### Marker Clustering
-![marker cluster zoom](https://media.giphy.com/media/XJpK6gaONtlpZLx0pa/giphy.gif)
+![marker cluster zoom](https://media.giphy.com/media/vc3dCJcIC1if5Edk5P/giphy.gif)
 
 ### Filtering
 
@@ -24,6 +24,7 @@ Each category has a circle associated with it as either a solid color or a color
 
 ### Spiderfying
 
+![spider](https://media.giphy.com/media/4bjFSGmf6txtrKd02d/giphy.gif)
 
 ## Resources Used
 
