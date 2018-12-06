@@ -100,6 +100,11 @@ input[type="submit"] {
     padding:6px 12px;
 }
 
+#help {
+    height: 12px;
+    width: 12px;
+}
+
 #key { margin-top:40px; }
 
 #marker-img {

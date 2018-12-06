@@ -86,7 +86,7 @@
                                 </div>
                                 
                                 <div class="form-group">
-                                    <label for="category">Category</label>
+                                    <label for="category">Category <span data-toggle="tooltip" data-placement="right" title="Hover over color codes to learn about each category."><img id="help" src="static/images/help.png"></span></label>
                                     <div id="category-div">
                                         <!--
                                         ---- Category Filtering 
@@ -101,7 +101,7 @@
                                         <div class="form-check">
                                           <input class="form-check-input" type="radio" name="category" id="category" value="Arson">
                                           <label class="form-check-label" for="Arson">
-                                            Arson <span rel="tooltip" data-toggle="tooltip" data-trigger="hover" data-placement="right" data-html="true" title="This includes: <ul><li>arson of vehicle</li><li>attempted arson</li><li>arson of an inhabited dwelling</li></ul>"><img class="category-code" src="static/images/aqua.png"></span>
+                                            Arson <span rel="tooltip" data-toggle="tooltip" data-trigger="hover" data-placement="right" data-html="true" title="This includes arson of vehicle, attempted arson, arson of an inhabited dwelling"><img class="category-code" src="static/images/aqua.png"></span>
                                           </label>
                                         </div>
                                         <!-- Assault -->
@@ -404,7 +404,7 @@
 
 
                                 <div class="form-group">
-                                    <label for="resolution">Resolution</label>
+                                    <label for="resolution">Resolution <span data-toggle="tooltip" data-placement="right" title="Outcome of incident at time of report."><img id="help" src="static/images/help.png"></span></label>
                                     <select class="form-control" name="resolution" id="resolution">
                                         <option value="---">---</option>
                                         <option value="Cite or Arrest Adult">Cite or Arrest Adult</option>
@@ -415,7 +415,7 @@
                                     </select>
                                 </div>
 
-                                <input type="submit" value="Update Map">
+                                <input id="submit-button" type="submit" value="Update Map">
                             </form>
                         </div>
                         <div class = "col-5">
