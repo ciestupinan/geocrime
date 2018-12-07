@@ -125,7 +125,10 @@ input[type="submit"] {
 }
 
 
-
+.category-key {
+    height: 300px;
+    overflow: scroll;
+}
 
 
 
