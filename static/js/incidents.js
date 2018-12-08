@@ -203,7 +203,7 @@ function getIcon(incident){
     'Disorderly Conduct': 'static/images/blue_outline.png',
     'Drug Offense': 'static/images/brown.png',
     'Drug Violation': 'static/images/brown.png',
-    'Embezzlement': 'static/images/brown_outline.png',
+    'Embezzlement': 'static/images/lightgreen_outline.png',
     'Family Offense': 'static/images/brown_black_outline.png',
     'Fire Report': 'static/images/darkgreen.png',
     'Forgery And Counterfeiting': 'static/images/darkgreen_outline.png',
@@ -220,7 +220,7 @@ function getIcon(incident){
     'Offences Against The Family And Children': 'static/images/lightblue.png',
     'Other': 'static/images/lightblue_outline.png',
     'Other Miscellaneous': 'static/images/lightgreen.png',
-    'Other Offenses': 'static/images/lightgreen_outline.png',
+    'Other Offenses': 'static/images/brown_outline.png',
     'Prostitution': 'static/images/orange_black_outline.png',
     'Rape': 'static/images/orange.png',
     'Recovered Vehicle': 'static/images/orange_outline.png',
@@ -292,14 +292,14 @@ function setUpFormSubmitHandler(map, incidentData, markerList, markerCluster, om
     // setTimeout(resetMap(map),20);
 
 
-    // const category = document.getElementById('category').value;
-    const category = document.querySelector('input[name="category"]:checked').value;
+    const category = document.getElementById('category').value;
+    // const category = document.querySelector('input[name="category"]:checked').value;
     // const subcategory = document.getElementById('subcategory').value;
     const resolution = document.getElementById('resolution').value;
     const time = document.getElementById('time').value;
     const date = document.getElementById('date').value;
 
-    const formFilters = {'category':(category === "No Category Filter") ? '---' : category,
+    const formFilters = {'category':category,
         // 'subcategory':subcategory,
         'resolution':resolution,
         'time':time,
