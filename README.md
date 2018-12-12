@@ -12,19 +12,22 @@ Google Maps API, Overlapping Marker Spiderfier Library, DataSF, Bootstrap
 ## Features
 
 ### Marker Clustering
+Initially, I had all the incidents displayed on the map, but this was very overwhelming and created a marker forest. I found that switching to marker clustering was an easy way to visualize exactly how much activity happens in the city. By clicking on the marker cluster, you zoom further into the city and get a more detailed view of where the dense locations are. At the closest zoom, color markers appear. Each color represents a different police report category. 
+
 ![marker cluster zoom](https://media.giphy.com/media/XJpK6gaONtlpZLx0pa/giphy.gif)
+
+### Spiderfying
+Many incidents occur at the same point, so to display these, I used the Overlapping Marker Spiderfier Library. Using the Google marker clustering library helps deal with markers that are close together, but doesn't allow you to access all the markers at one point. This library allows markers at the same point to spiderfy into a circle. Without this, only the top marker would be visible and usable.
+![spider](https://media.giphy.com/media/4bjFSGmf6txtrKd02d/giphy.gif)
 
 ### Filtering
 
 After getting the data from DataSF via AJAX, I had to extract the relevant data needed for this project. I saved the relevant data as an object to use it throughout my program. This also allowed my app to filter dynamically, rather than call AJAX each time the filters changed. 
 
+I include a key showing the color markers and their corresponding categories. Using Bootstrap, a tooltip appears to show what types of incidents are labeled as that category when you hover over the marker icon. On the map, when you click on a marker, a Google Maps tooltip will appear describing the incident. I’ve built this app so that you can filter dynamically by date, time, category, or resolution. 
+
 ![filter by date](https://media.giphy.com/media/8hYMJPtZ3cU8YfVMEu/giphy.gif)
 
-Each category has a circle associated with it as either a solid color or a color with border. 
-
-### Spiderfying
-
-![spider](https://media.giphy.com/media/4bjFSGmf6txtrKd02d/giphy.gif)
 
 ## Resources Used
 
