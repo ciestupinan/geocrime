@@ -14,10 +14,11 @@ Google Maps API, Overlapping Marker Spiderfier Library, DataSF, Bootstrap
 ### Marker Clustering
 Initially, I had all the incidents displayed on the map, but this was very overwhelming and created a marker forest. I found that switching to marker clustering was an easy way to visualize exactly how much activity happens in the city. By clicking on the marker cluster, you zoom further into the city and get a more detailed view of where the dense locations are. At the closest zoom, color markers appear. Each color represents a different police report category. 
 
-![marker cluster zoom](https://media.giphy.com/media/XJpK6gaONtlpZLx0pa/giphy.gif)
+![marker cluster zoom](https://media.giphy.com/media/d9ao2BHozmDylflfSR/giphy.gif)
 
 ### Spiderfying
 Many incidents occur at the same point, so to display these, I used the Overlapping Marker Spiderfier Library. Using the Google marker clustering library helps deal with markers that are close together, but doesn't allow you to access all the markers at one point. This library allows markers at the same point to spiderfy into a circle. Without this, only the top marker would be visible and usable.
+
 ![spider](https://media.giphy.com/media/4bjFSGmf6txtrKd02d/giphy.gif)
 
 ### Filtering
