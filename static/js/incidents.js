@@ -8,10 +8,6 @@ function startApp() {
   */
   getIncidentData(function(incidentData) {
 
-    $(function () {
-      $('[data-toggle="popover"]').popover()
-    })
-
     const oms = new OverlappingMarkerSpiderfier(map, {
       markersWontMove: true,
       markersWontHide: true,
@@ -44,6 +40,20 @@ function startApp() {
     const markerList = setInitialMarkers(map, incidentData, oms);
     const markerCluster = createMarkerCluster(map, markerList);
 
+
+    $('[data-toggle="popover"]').popover();
+
+    $('body').on('click', function (e) {
+        $('[data-toggle="popover"]').each(function () {
+            //the 'is' for buttons that trigger popups
+            //the 'has' for icons within a button that triggers a popup
+            if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+                $(this).popover('hide');
+            }
+        });
+    });
+
+    
     setUpFormSubmitHandler(map, incidentData, markerList, markerCluster, oms);
 
   });
