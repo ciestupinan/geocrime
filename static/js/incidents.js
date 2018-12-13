@@ -8,6 +8,10 @@ function startApp() {
   */
   getIncidentData(function(incidentData) {
 
+    $(function () {
+      $('[data-toggle="popover"]').popover()
+    })
+
     const oms = new OverlappingMarkerSpiderfier(map, {
       markersWontMove: true,
       markersWontHide: true,

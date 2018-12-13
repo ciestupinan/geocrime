@@ -9,6 +9,9 @@ Python, JavaScript, HTML, CSS
 
 Google Maps API, Overlapping Marker Spiderfier Library, DataSF, Bootstrap
 
+#### Contact
+[LinkedIn](https://www.linkedin.com/in/ciestupinan/)
+
 ## Features
 
 ### Marker Clustering
