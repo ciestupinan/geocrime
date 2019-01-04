@@ -11,8 +11,8 @@ Python, JavaScript, HTML, CSS
 Google Maps API, Overlapping Marker Spiderfier Library, DataSF, Bootstrap
 
 #### Links
-[Live Demo](http://geo-crime.com/)
-[Demo with Voiceover](https://youtu.be/aICKVKetfkE)
+[Live Demo](http://geo-crime.com/) | 
+[Demo with Voiceover](https://youtu.be/aICKVKetfkE) | 
 [LinkedIn](https://www.linkedin.com/in/ciestupinan/)
 
 ## About GeoCrime
