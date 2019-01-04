@@ -49,7 +49,7 @@ After getting the data from DataSF via AJAX, I had to extract the relevant data 
 ![filter by date](https://media.giphy.com/media/8hYMJPtZ3cU8YfVMEu/giphy.gif)
 
 ### Deployment
-At the end of my second sprint, I deployed my project using AWS Lightsail! You can visit my demo live at ![geo-crime.com](http://geo-crime.com/).
+At the end of my second sprint, I deployed my project using AWS Lightsail! You can visit my demo live at [geo-crime.com](http://geo-crime.com/).
   
 ## Challenges
 Right now, you can’t tell by look at the map which points have only one marker and which have multiple markers. I wanted to have a number, similar to a marker cluster, on points where there are multiple incidents at the same lat, long. When you click on this number, it would spider the incidents so that you could see them individually. The library would only allow me to display one type of marker - either all colored markers or all numbered markers. I plan on filing a bug with the library to get some clarification on how I could complete this or if it’s something they could implement in the next version. 
